@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "95870469027",
+    "firebase_url": "https://trip-planner-pucp.firebaseio.com",
+    "project_id": "trip-planner-pucp",
+    "storage_bucket": "trip-planner-pucp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95870469027:android:529a210d8a94e32c",
+        "android_client_info": {
+          "package_name": "com.turistapp.jose.turistapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "95870469027-3fpp8k17q3hg1q1gf75mls4s5j5po1k6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ09WeQGy-A5sKgrMiZhmtQSPszo6MR3M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

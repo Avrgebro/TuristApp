@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TuristApp</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_routes">Rutas</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="google_maps_key">AIzaSyAz8INMUB21e9AbqOQG-bXI8SYmB11ofA4</string>
+</resources>
