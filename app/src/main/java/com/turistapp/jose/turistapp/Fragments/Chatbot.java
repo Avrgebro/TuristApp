@@ -23,14 +23,16 @@ import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import com.turistapp.jose.turistapp.Async.DFRequest;
 import com.turistapp.jose.turistapp.MainActivity;
+import com.turistapp.jose.turistapp.Model.Author;
 import com.turistapp.jose.turistapp.Model.Message;
 import com.turistapp.jose.turistapp.R;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.UUID;
 
 
-public class Chatbot extends Fragment {
+public class Chatbot extends Fragment{
     private static final String TAG = "Chatbot Fragment";
 
     private OnFragmentInteractionListener mListener;
@@ -44,8 +46,10 @@ public class Chatbot extends Fragment {
 
     //Chat data
     private MessagesList messagesList;
+    private MessagesListAdapter<Message> adapter;
     private MessageInput input;
     protected final String senderId = "0";
+    private Author author;
 
     View view;
 
@@ -68,8 +72,18 @@ public class Chatbot extends Fragment {
         messagesList = (MessagesList) view.findViewById(R.id.messagesList);
         input = (MessageInput) view.findViewById(R.id.input);
 
-        MessagesListAdapter<Message> adapter = new MessagesListAdapter<>(senderId, null);
+        adapter = new MessagesListAdapter<>(senderId, null);
         messagesList.setAdapter(adapter);
+
+        input.setInputListener(new MessageInput.InputListener() {
+            @Override
+            public boolean onSubmit(CharSequence input) {
+                Message m = addMessage("0", input.toString());
+                adapter.addToStart(m, true);
+                sendMessage(m.getText());
+                return true;
+            }
+        });
 
         initai();
 
@@ -91,14 +105,12 @@ public class Chatbot extends Fragment {
         }
     }
 
-    private void sendMessage(View view) {
-        String msg = "Hola";
-        if (msg.trim().isEmpty()) {
+    private void sendMessage(String text) {
+        if (text.trim().isEmpty()) {
             Toast.makeText(getActivity(), "Please enter your query!", Toast.LENGTH_LONG).show();
         } else {
 
-
-            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(text).setLanguageCode("es_US")).build();
             new DFRequest(this, session, sessionsClient, queryInput).execute();
         }
     }
@@ -106,10 +118,23 @@ public class Chatbot extends Fragment {
     public void callback(DetectIntentResponse response) {
         if (response != null) {
             String reply = response.getQueryResult().getFulfillmentText();
+            adapter.addToStart(addMessage("1", reply), true);
+
         } else {
             Log.d(TAG, "Bot Reply: Null");
 
         }
+    }
+
+    private Message addMessage(String userId, String text){
+        String name = "";
+        if(userId.equals("0")) {
+            name = "User";
+        } else {
+            name = "Trippy";
+        }
+        author = new Author(userId,name,null);
+        return new Message(userId,author,text,new Date());
     }
 
     public interface OnFragmentInteractionListener {
