@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.turistapp.jose.turistapp.Fragments.Chatbot;
+import com.turistapp.jose.turistapp.Fragments.Places;
 import com.turistapp.jose.turistapp.Fragments.Route;
 
 public class MainActivity extends AppCompatActivity
@@ -27,8 +28,13 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment frag;
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_chat:
                     frag = new Chatbot();
+                    inflateFragment(frag);
+                    return true;
+
+                case R.id.navigation_places:
+                    frag = new Places();
                     inflateFragment(frag);
                     return true;
 
