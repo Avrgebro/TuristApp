@@ -91,7 +91,7 @@ public class Chatbot extends Fragment{
 
     public void initai() {
         try {
-            InputStream stream = getResources().openRawResource(R.raw.dialogFlow_credentials);
+            InputStream stream = getResources().openRawResource(R.raw.dialogflow_credentials);
             GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
             String projectId = ((ServiceAccountCredentials)credentials).getProjectId();
 
