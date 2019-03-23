@@ -1,8 +1,8 @@
 package com.turistapp.jose.turistapp.Async;
 
-import android.app.Activity;
+
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
+
 
 import com.google.cloud.dialogflow.v2.DetectIntentRequest;
 import com.google.cloud.dialogflow.v2.DetectIntentResponse;

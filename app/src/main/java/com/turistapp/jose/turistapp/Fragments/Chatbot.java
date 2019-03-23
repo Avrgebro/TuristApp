@@ -22,7 +22,6 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import com.turistapp.jose.turistapp.Async.DFRequest;
-import com.turistapp.jose.turistapp.MainActivity;
 import com.turistapp.jose.turistapp.Model.Author;
 import com.turistapp.jose.turistapp.Model.Message;
 import com.turistapp.jose.turistapp.R;
@@ -92,7 +91,7 @@ public class Chatbot extends Fragment{
 
     public void initai() {
         try {
-            InputStream stream = getResources().openRawResource(R.raw.google_credentials);
+            InputStream stream = getResources().openRawResource(R.raw.dialogFlow_credentials);
             GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
             String projectId = ((ServiceAccountCredentials)credentials).getProjectId();
 
