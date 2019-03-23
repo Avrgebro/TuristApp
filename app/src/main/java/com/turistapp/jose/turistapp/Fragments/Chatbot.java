@@ -130,7 +130,7 @@ public class Chatbot extends Fragment{
         if(userId.equals("0")) {
             name = "User";
         } else {
-            name = "Trippy";
+            name = "Bot";
         }
         author = new Author(userId,name,null);
         return new Message(userId,author,text,new Date());
