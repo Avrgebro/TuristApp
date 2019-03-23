@@ -1,109 +1,118 @@
 package com.turistapp.jose.turistapp.Fragments;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.dialogflow.v2.DetectIntentResponse;
+import com.google.cloud.dialogflow.v2.QueryInput;
+import com.google.cloud.dialogflow.v2.SessionName;
+import com.google.cloud.dialogflow.v2.SessionsClient;
+import com.google.cloud.dialogflow.v2.SessionsSettings;
+import com.google.cloud.dialogflow.v2.TextInput;
+import com.stfalcon.chatkit.messages.MessageInput;
+import com.stfalcon.chatkit.messages.MessagesList;
+import com.stfalcon.chatkit.messages.MessagesListAdapter;
+import com.turistapp.jose.turistapp.Async.DFRequest;
+import com.turistapp.jose.turistapp.MainActivity;
+import com.turistapp.jose.turistapp.Model.Message;
 import com.turistapp.jose.turistapp.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Chatbot.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Chatbot#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Chatbot extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.io.InputStream;
+import java.util.UUID;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+public class Chatbot extends Fragment {
+    private static final String TAG = "Chatbot Fragment";
 
     private OnFragmentInteractionListener mListener;
+
+    //Random session id
+    private String uuid = UUID.randomUUID().toString();
+
+    //Client session metadata
+    private SessionsClient sessionsClient;
+    private SessionName session;
+
+    //Chat data
+    private MessagesList messagesList;
+    private MessageInput input;
+    protected final String senderId = "0";
+
+    View view;
 
     public Chatbot() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Chatbot.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Chatbot newInstance(String param1, String param2) {
-        Chatbot fragment = new Chatbot();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chatbot, container, false);
-    }
+        view = inflater.inflate(R.layout.fragment_chatbot, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        return view;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        messagesList = (MessagesList) view.findViewById(R.id.messagesList);
+        input = (MessageInput) view.findViewById(R.id.input);
+
+        MessagesListAdapter<Message> adapter = new MessagesListAdapter<>(senderId, null);
+        messagesList.setAdapter(adapter);
+
+        initai();
+
+
+    }
+
+    public void initai() {
+        try {
+            InputStream stream = getResources().openRawResource(R.raw.google_credentials);
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
+            String projectId = ((ServiceAccountCredentials)credentials).getProjectId();
+
+            SessionsSettings.Builder settingsBuilder = SessionsSettings.newBuilder();
+            SessionsSettings sessionsSettings = settingsBuilder.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+            sessionsClient = SessionsClient.create(sessionsSettings);
+            session = SessionName.of(projectId, uuid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMessage(View view) {
+        String msg = "Hola";
+        if (msg.trim().isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter your query!", Toast.LENGTH_LONG).show();
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+
+
+            QueryInput queryInput = QueryInput.newBuilder().setText(TextInput.newBuilder().setText(msg).setLanguageCode("en-US")).build();
+            new DFRequest(this, session, sessionsClient, queryInput).execute();
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void callback(DetectIntentResponse response) {
+        if (response != null) {
+            String reply = response.getQueryResult().getFulfillmentText();
+        } else {
+            Log.d(TAG, "Bot Reply: Null");
+
+        }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

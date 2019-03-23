@@ -44,11 +44,9 @@ public class Route extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_route, container, false);
 
         return view;
-
     }
 
     @Override
