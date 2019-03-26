@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -54,7 +56,16 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
         if (item != null) {
 
             holder.placename.setText(item.getName());
-            Glide.with(getContext()).load(item.getImgurl()).apply(new RequestOptions().override(240, 120)).centerCrop().into(holder.placeimage);
+
+            RequestOptions reqOpt = RequestOptions
+                    .fitCenterTransform()
+                    .transform(new RoundedCorners(5))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(holder.placeimage.getWidth(),holder.placeimage.getHeight());
+
+            Glide.with(getContext()).load(item.getImgurl()).thumbnail(/*sizeMultiplier=*/ 0.25f)
+                    .apply(reqOpt).centerCrop().into(holder.placeimage);
+
             holder.addbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

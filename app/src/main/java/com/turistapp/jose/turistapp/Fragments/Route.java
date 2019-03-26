@@ -72,12 +72,12 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
 
 
-        LatLng ll = new LatLng(-12.1064917,-76.9674603);
+        LatLng ll = new LatLng(-0.9681658,-80.7127556);
 
 
-        googleMap.addMarker(new MarkerOptions().position(ll));
+        //googleMap.addMarker(new MarkerOptions().position(ll));
 
-        CameraPosition pos = CameraPosition.builder().target(ll).zoom(16).build();
+        CameraPosition pos = CameraPosition.builder().target(ll).zoom(13).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
