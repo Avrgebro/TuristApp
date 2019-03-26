@@ -6,26 +6,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.turistapp.jose.turistapp.Fragments.Places;
+import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.R;
 
 import java.util.List;
 
-public class PlacesListAdapter extends ArrayAdapter<String> {
+public class PlacesListAdapter extends ArrayAdapter<Place> {
 
     private final LayoutInflater mInflater;
-    private final ViewBinderHelper binderHelper;
 
-    public PlacesListAdapter(Context context, List<String> objects) {
+
+    public PlacesListAdapter(Context context, List<Place> objects) {
         super(context, R.layout.places_item, objects);
         mInflater = LayoutInflater.from(context);
-        binderHelper = new ViewBinderHelper();
 
-        // uncomment if you want to open only one row at a time
-        // binderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -36,31 +39,32 @@ public class PlacesListAdapter extends ArrayAdapter<String> {
             convertView = mInflater.inflate(R.layout.places_item, parent, false);
 
             holder = new ViewHolder();
-            holder.swipeLayout = (SwipeRevealLayout) convertView.findViewById(R.id.swipe_layout);
-            holder.frontView = convertView.findViewById(R.id.front_layout);
-            holder.deleteView = convertView.findViewById(R.id.delete_layout);
-            holder.textView = (TextView) convertView.findViewById(R.id.text);
+            holder.placeimage = (CircularImageView) convertView.findViewById(R.id.locationimage_pilayout);
+            holder.addbtn = (TextView) convertView.findViewById(R.id.addbtn_pilayout);
+            holder.delbtn = (TextView) convertView.findViewById(R.id.delbtn_pilayout);
+            holder.placename = (TextView) convertView.findViewById(R.id.locationname_pilayout);
+            holder.selected = (ImageView) convertView.findViewById(R.id.selected_pilayout);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final String item = getItem(position);
+        final Place item = getItem(position);
         if (item != null) {
-            binderHelper.bind(holder.swipeLayout, item);
 
-            holder.textView.setText(item);
-            holder.deleteView.setOnClickListener(new View.OnClickListener() {
+            holder.placename.setText(item.getName());
+            Glide.with(getContext()).load(item.getImgurl()).apply(new RequestOptions().override(240, 120)).centerCrop().into(holder.placeimage);
+            holder.addbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(item);
+
                 }
             });
-            holder.frontView.setOnClickListener(new View.OnClickListener() {
+            holder.delbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String displayText = "" + item + " clicked";
+                    //quitar del recorrido
                 }
             });
         }
@@ -68,26 +72,11 @@ public class PlacesListAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    /**
-     * Only if you need to restore open/close state when the orientation is changed.
-     * Call this method in {@link android.app.Activity#onSaveInstanceState(Bundle)}
-     */
-    public void saveStates(Bundle outState) {
-        binderHelper.saveStates(outState);
-    }
-
-    /**
-     * Only if you need to restore open/close state when the orientation is changed.
-     * Call this method in {@link android.app.Activity#onRestoreInstanceState(Bundle)}
-     */
-    public void restoreStates(Bundle inState) {
-        binderHelper.restoreStates(inState);
-    }
-
     private class ViewHolder {
-        SwipeRevealLayout swipeLayout;
-        View frontView;
-        View deleteView;
-        TextView textView;
+        CircularImageView placeimage;
+        View addbtn;
+        View delbtn;
+        TextView placename;
+        ImageView selected;
     }
 }
