@@ -77,7 +77,7 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
         //googleMap.addMarker(new MarkerOptions().position(ll));
 
-        CameraPosition pos = CameraPosition.builder().target(ll).zoom(13).build();
+        CameraPosition pos = CameraPosition.builder().target(ll).zoom(14).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
