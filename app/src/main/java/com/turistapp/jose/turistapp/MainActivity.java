@@ -33,7 +33,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment frag;
+
             switch (item.getItemId()) {
                 case R.id.navigation_chat:
                     fm.beginTransaction().hide(active).show(chatbotFragment).commit();

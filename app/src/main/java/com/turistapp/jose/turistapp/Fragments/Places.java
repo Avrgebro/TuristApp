@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.maps.model.LatLng;
 import com.turistapp.jose.turistapp.Activities.PlaceInfoActivity;
 import com.turistapp.jose.turistapp.Adapters.PlacesListAdapter;
@@ -31,6 +33,10 @@ public class Places extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private PlacesListAdapter adapter;
+
+    private LottieAnimationView animview;
+
+    private Button genbtn;
 
     View view;
 
@@ -54,16 +60,16 @@ public class Places extends Fragment {
         adapter = new PlacesListAdapter(getActivity(), fakelist());
         listView.setAdapter(adapter);
 
-        /* fuck that dude
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        animview = (LottieAnimationView) view.findViewById(R.id.pinjumpanimation);
+
+        genbtn = (Button) view.findViewById(R.id.gen_btn);
+        genbtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), PlaceInfoActivity.class);
-                startActivity(intent);
-                Log.i(TAG, "item clicked");
+            public void onClick(View v) {
+                animview.setVisibility(View.VISIBLE);
+                genbtn.setVisibility(View.GONE);
             }
         });
-        */
 
     }
 

@@ -3,12 +3,41 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="100">
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="90"
         android:id="@+id/places_list">
 
     </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10">
+
+        <Button
+            android:id="@+id/gen_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:layout_gravity="center_vertical|end"
+            android:text="Crear ruta" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:visibility="gone"
+            android:id="@+id/pinjumpanimation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            app:lottie_rawRes="@raw/pinjump"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"/>
+
+
+    </LinearLayout>
 </LinearLayout>
