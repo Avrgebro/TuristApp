@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +22,12 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
     private TextView mTextMessage;
 
+    final Fragment chatbotFragment = new Chatbot();
+    final Fragment placesFragment = new Places();
+    final Fragment routeFragment = new Route();
+    final FragmentManager fm = getSupportFragmentManager();
+    Fragment active = chatbotFragment;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -29,18 +36,18 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
             Fragment frag;
             switch (item.getItemId()) {
                 case R.id.navigation_chat:
-                    frag = new Chatbot();
-                    inflateFragment(frag);
+                    fm.beginTransaction().hide(active).show(chatbotFragment).commit();
+                    active = chatbotFragment;
                     return true;
 
                 case R.id.navigation_places:
-                    frag = new Places();
-                    inflateFragment(frag);
+                    fm.beginTransaction().hide(active).show(placesFragment).commit();
+                    active = placesFragment;
                     return true;
 
                 case R.id.navigation_routes:
-                    frag = new Route();
-                    inflateFragment(frag);
+                    fm.beginTransaction().hide(active).show(routeFragment).commit();
+                    active = routeFragment;
                     return true;
             }
             return false;
@@ -55,8 +62,9 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Fragment fragment = new Chatbot();
-        inflateFragment(fragment);
+        fm.beginTransaction().add(R.id.mainfragment, routeFragment, "3").hide(routeFragment).commit();
+        fm.beginTransaction().add(R.id.mainfragment, placesFragment, "2").hide(placesFragment).commit();
+        fm.beginTransaction().add(R.id.mainfragment, chatbotFragment, "1").commit();
     }
 
     @Override

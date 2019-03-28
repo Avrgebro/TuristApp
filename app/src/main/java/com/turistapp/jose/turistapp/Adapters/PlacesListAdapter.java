@@ -1,12 +1,15 @@
 package com.turistapp.jose.turistapp.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +18,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.turistapp.jose.turistapp.Activities.PlaceInfoActivity;
 import com.turistapp.jose.turistapp.Fragments.Places;
 import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.R;
@@ -26,10 +31,16 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
 
     private final LayoutInflater mInflater;
 
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
+
+    private Context mcon;
+
 
     public PlacesListAdapter(Context context, List<Place> objects) {
         super(context, R.layout.places_item, objects);
+        mcon = context;
         mInflater = LayoutInflater.from(context);
+        viewBinderHelper.setOpenOnlyOne(true);
 
     }
 
@@ -46,6 +57,9 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
             holder.delbtn = (TextView) convertView.findViewById(R.id.delbtn_pilayout);
             holder.placename = (TextView) convertView.findViewById(R.id.locationname_pilayout);
             holder.selected = (ImageView) convertView.findViewById(R.id.selected_pilayout);
+            holder.swipeLayout = (SwipeRevealLayout) convertView.findViewById(R.id.swipe_pilayout);
+            holder.mainLayout = (LinearLayout) convertView.findViewById(R.id.main_pilayout);
+
 
             convertView.setTag(holder);
         } else {
@@ -54,6 +68,8 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
 
         final Place item = getItem(position);
         if (item != null) {
+
+            viewBinderHelper.bind(holder.swipeLayout, item.getName());
 
             holder.placename.setText(item.getName());
 
@@ -69,13 +85,26 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
             holder.addbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Log.i("ADAPTER: ","add button clicked");
+                    holder.swipeLayout.close(true);
                 }
             });
+
             holder.delbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //quitar del recorrido
+                    Log.i("ADAPTER: ","remove button clicked");
+                    holder.swipeLayout.close(true);
+                }
+            });
+
+            holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("ADAPTER: ", "main layout clicked");
+                    Intent intent = new Intent(mcon, PlaceInfoActivity.class);
+                    mcon.startActivity(intent);
+
                 }
             });
         }
@@ -84,6 +113,8 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
     }
 
     private class ViewHolder {
+        View mainLayout;
+        SwipeRevealLayout swipeLayout;
         CircularImageView placeimage;
         View addbtn;
         View delbtn;

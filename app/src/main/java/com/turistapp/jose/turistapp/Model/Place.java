@@ -1,18 +1,21 @@
 package com.turistapp.jose.turistapp.Model;
 
+
+import com.google.android.gms.maps.model.LatLng;
+
 public class Place {
     private String name;
-    private float latitude;
-    private float longitude;
+    //private float latitude;
+    //private float longitude;
+    private LatLng coordinates;
     private String imgurl;
 
     public Place() {
     }
 
-    public Place(String name, float latitude, float longitude, String imgurl) {
+    public Place(String name, LatLng coordinates, String imgurl) {
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.coordinates = coordinates;
         this.imgurl = imgurl;
     }
 
@@ -24,6 +27,7 @@ public class Place {
         this.name = name;
     }
 
+    /*
     public float getLatitude() {
         return latitude;
     }
@@ -39,6 +43,7 @@ public class Place {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+    */
 
     public String getImgurl() {
         return imgurl;
@@ -46,5 +51,13 @@ public class Place {
 
     public void setImgurl(String imgurl) {
         this.imgurl = imgurl;
+    }
+
+    public LatLng getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(LatLng coordinates) {
+        this.coordinates = coordinates;
     }
 }
