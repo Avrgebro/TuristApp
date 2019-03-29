@@ -11,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.api.Distribution;
 import com.turistapp.jose.turistapp.Activities.PlaceInfoActivity;
 import com.turistapp.jose.turistapp.Adapters.PlacesListAdapter;
 import com.turistapp.jose.turistapp.MainActivity;
@@ -37,6 +41,10 @@ public class Places extends Fragment {
     private LottieAnimationView animview;
 
     private Button genbtn;
+
+    private TextView loadingtxt;
+
+    private RelativeLayout loadinglayout;
 
     View view;
 
@@ -61,12 +69,16 @@ public class Places extends Fragment {
         listView.setAdapter(adapter);
 
         animview = (LottieAnimationView) view.findViewById(R.id.pinjumpanimation);
+        loadingtxt = (TextView) view.findViewById(R.id.loadinginfo);
+        loadinglayout = (RelativeLayout) view.findViewById(R.id.loadinglayout);
 
         genbtn = (Button) view.findViewById(R.id.gen_btn);
         genbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animview.setVisibility(View.VISIBLE);
+                /*animview.setVisibility(View.VISIBLE);
+                loadingtxt.setVisibility(View.VISIBLE);*/
+                loadinglayout.setVisibility(View.VISIBLE);
                 genbtn.setVisibility(View.GONE);
             }
         });

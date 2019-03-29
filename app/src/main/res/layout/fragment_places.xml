@@ -23,20 +23,40 @@
             android:id="@+id/gen_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="15dp"
             android:layout_gravity="center_vertical|end"
+            android:padding="15dp"
             android:text="Crear ruta" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:visibility="gone"
-            android:id="@+id/pinjumpanimation"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            app:lottie_rawRes="@raw/pinjump"
-            app:lottie_loop="true"
-            app:lottie_autoPlay="true"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/loadinglayout"
+            android:visibility="gone">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/pinjumpanimation"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:scaleType="centerInside"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/pinjump"
+                app:lottie_scale="2.0" />
+
+
+            <TextView
+                android:layout_alignBottom="@id/pinjumpanimation"
+                android:layout_centerInParent="true"
+                android:id="@+id/loadinginfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:text="Calculando distancias..." />
+
+        </RelativeLayout>
+
+
 
 
     </LinearLayout>
