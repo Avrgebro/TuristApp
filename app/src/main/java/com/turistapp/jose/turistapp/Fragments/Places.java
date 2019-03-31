@@ -5,6 +5,9 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -33,6 +36,7 @@ import com.polyak.iconswitch.IconSwitch;
 import com.turistapp.jose.turistapp.Activities.PlaceInfoActivity;
 import com.turistapp.jose.turistapp.Adapters.PlacesListAdapter;
 import com.turistapp.jose.turistapp.MainActivity;
+import com.turistapp.jose.turistapp.MapsUtils.MapsUrlBuilder;
 import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.R;
 
@@ -41,6 +45,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static com.polyak.iconswitch.IconSwitch.Checked.LEFT;
+import static com.polyak.iconswitch.IconSwitch.Checked.RIGHT;
+import static com.turistapp.jose.turistapp.MapsUtils.MapsUrlBuilder.DRIVING_MODE;
+import static com.turistapp.jose.turistapp.MapsUtils.MapsUrlBuilder.WALKING_MODE;
 
 
 public class Places extends Fragment {
@@ -52,6 +61,8 @@ public class Places extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private PlacesListAdapter adapter;
+
+    private LocationManager locationManager;
 
     //widgets
     private LottieAnimationView animview;
@@ -84,6 +95,8 @@ public class Places extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         ListView listView = (ListView) view.findViewById(R.id.places_list);
         adapter = new PlacesListAdapter(getActivity(), fakelist());
@@ -139,6 +152,11 @@ public class Places extends Fragment {
                             != PackageManager.PERMISSION_GRANTED) {
                         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_REQUEST_RESULT);
                     }
+
+                    adapter.toggleOrigin(0);
+
+                } else {
+                    adapter.toggleOrigin(1);
                 }
 
             }
@@ -149,9 +167,9 @@ public class Places extends Fragment {
     private List<Place> fakelist() {
         List<Place> list = new ArrayList<>();
 
-        Place p1 = new Place("Museo Cancebi", new LatLng(123,123), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2F2016-12-20.jpg?alt=media&token=ee11f173-11d4-47b3-8587-55c8bc07df66");
-        Place p2 = new Place("Malecon del murcielago", new LatLng(123,123), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fatardecer-entrando-al.jpg?alt=media&token=5de4c3e9-07e1-4eac-986d-c5e32c479abd");
-        Place p3 = new Place("Playa Murcielago", new LatLng(123,123), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FPlaya%20del%20Murci%C3%A9lago%20_1.jpg?alt=media&token=b8aed93c-c660-40fc-be40-940563dfd333");
+        Place p1 = new Place("Museo Cancebi", new LatLng(-0.9500534,-80.7202813), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2F2016-12-20.jpg?alt=media&token=ee11f173-11d4-47b3-8587-55c8bc07df66");
+        Place p2 = new Place("Malecon del murcielago", new LatLng(-0.9437843,-80.7306949), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fatardecer-entrando-al.jpg?alt=media&token=5de4c3e9-07e1-4eac-986d-c5e32c479abd");
+        Place p3 = new Place("Playa Murcielago", new LatLng(-0.9414055,-80.7368706), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FPlaya%20del%20Murci%C3%A9lago%20_1.jpg?alt=media&token=b8aed93c-c660-40fc-be40-940563dfd333");
 
         list.add(p1);
         list.add(p2);
@@ -169,8 +187,39 @@ public class Places extends Fragment {
             coordinates.add(p.getCoordinates());
         }
 
-        int oIndex = coordinates.indexOf(adapter.getOrigin().getCoordinates());
+        LatLng orig;
 
+        if(gpsswitch.isChecked()){//se crea un latlong con la ubicacion actual del usuario y se agega coordinates
+            Location gps_lock = null;
+
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                gps_lock = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+
+            orig = new LatLng(gps_lock.getLatitude(), gps_lock.getLongitude());
+
+            coordinates.add(orig);
+
+        } else {
+            orig = adapter.getOrigin().getCoordinates();
+        }
+
+        int oIndex = coordinates.indexOf(orig);
+
+
+        String mode = "";
+        switch (modeswitch.getChecked()) {
+            case LEFT:
+                mode = DRIVING_MODE;
+                break;
+            case RIGHT:
+                mode = WALKING_MODE;
+                break;
+        }
+
+        String reqURL = new MapsUrlBuilder(coordinates, 0 , mode, oIndex).build();
+
+        Log.i(TAG, reqURL);
 
 
 

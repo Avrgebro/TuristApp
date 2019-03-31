@@ -37,6 +37,8 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
 
     private Context mcon;
 
+    private ViewGroup mparent;
+
     ArrayList<Place> selectedroute = new ArrayList<>();
 
     private int originindex = 0;
@@ -62,6 +64,8 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
+
+        mparent = parent;
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.places_item, parent, false);
@@ -155,6 +159,19 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
         }
 
         return convertView;
+    }
+
+    /*
+    * dejar de visualizar el indicador de origen
+    * 0 dejar de ver
+    * 1 ver nuevamente*/
+    public void toggleOrigin(int i){
+        if(i == 0){
+            mparent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.GONE);
+
+        } else if (i == 1){
+            mparent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.VISIBLE);
+        }
     }
 
 
