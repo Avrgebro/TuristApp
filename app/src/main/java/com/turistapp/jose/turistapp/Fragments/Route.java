@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +32,7 @@ public class Route extends Fragment implements OnMapReadyCallback {
     private OnFragmentInteractionListener mListener;
     private SlidingUpPanelLayout slidingLayout;
     private LinearLayout dzone;
+    private ImageView arrow;
 
     MapView mapView;
     GoogleMap googleMap;
@@ -63,6 +65,19 @@ public class Route extends Fragment implements OnMapReadyCallback {
             mapView.onResume();
             mapView.getMapAsync(this);
         }
+
+        slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                arrow = (ImageView) view.findViewById(R.id.arrow);
+                arrow.setRotation(180*slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+
+            }
+        });
     }
 
     @Override
@@ -79,6 +94,10 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
         CameraPosition pos = CameraPosition.builder().target(ll).zoom(14).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+    }
+
+    public void processRoute(){
+
     }
 
 

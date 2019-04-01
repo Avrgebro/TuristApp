@@ -32,13 +32,15 @@
             android:layout_height="34dp"
             android:id="@+id/dragzone"
             android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
+            android:background="@color/colorAccent">
 
 
-            <TextView
+            <ImageView
+                android:id="@+id/arrow"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="RUTA"/>
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_drop_up_black_24dp"
+                android:layout_gravity="center_vertical|center_horizontal"/>
 
         </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.turistapp.jose.turistapp.MapsUtils;
 
 import android.support.annotation.StringDef;
+import android.support.v4.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 

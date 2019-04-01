@@ -125,7 +125,7 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
                 @Override
                 public void onClick(View view) {
                     Log.i("ADAPTER: ","remove button clicked");
-                    holder.selected.setVisibility(View.GONE);
+                    holder.selected.setVisibility(View.INVISIBLE);
                     holder.swipeLayout.close(true);
 
                     selectedroute.remove(item);
@@ -137,7 +137,7 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
                 public void onClick(View v) {
 
                     Log.i("ADAPTER: ","origin button clicked");
-                    parent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.GONE);
+                    parent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.INVISIBLE);
                     originindex = position;
 
                     holder.origin.setVisibility(View.VISIBLE);
@@ -167,7 +167,7 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
     * 1 ver nuevamente*/
     public void toggleOrigin(int i){
         if(i == 0){
-            mparent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.GONE);
+            mparent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.INVISIBLE);
 
         } else if (i == 1){
             mparent.getChildAt(originindex).findViewById(R.id.origin_pilayout).setVisibility(View.VISIBLE);
