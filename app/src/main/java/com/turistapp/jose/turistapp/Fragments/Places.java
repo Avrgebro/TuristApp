@@ -123,10 +123,16 @@ public class Places extends Fragment {
         genbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadinglayout.setVisibility(View.VISIBLE);
-                controlslayout.setVisibility(View.GONE);
 
-                generateroute();
+                if(adapter.getSelected().size() == 0) {
+                    Toast.makeText(getActivity(), "Ningun lugar seleccionado", Toast.LENGTH_SHORT).show();
+                } else {
+                    loadinglayout.setVisibility(View.VISIBLE);
+                    controlslayout.setVisibility(View.GONE);
+
+                    generateroute();
+                }
+
 
 
             }
@@ -176,7 +182,7 @@ public class Places extends Fragment {
         List<Place> list = new ArrayList<>();
 
         Place p1 = new Place("Museo Cancebi", new LatLng(-0.9476959,-80.7217458), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2F2016-12-20.jpg?alt=media&token=ee11f173-11d4-47b3-8587-55c8bc07df66", 9, 17);
-        Place p2 = new Place("Malecon del murcielago", new LatLng(-0.9425146,-80.742785), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fatardecer-entrando-al.jpg?alt=media&token=5de4c3e9-07e1-4eac-986d-c5e32c479abd", 0, 0);
+        Place p2 = new Place("Malecon del murcielago", new LatLng(-0.9406871,-80.7322122), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fatardecer-entrando-al.jpg?alt=media&token=5de4c3e9-07e1-4eac-986d-c5e32c479abd", 0, 0);
         Place p3 = new Place("Playa Murcielago", new LatLng(-0.9425146,-80.742785), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FPlaya%20del%20Murci%C3%A9lago%20_1.jpg?alt=media&token=b8aed93c-c660-40fc-be40-940563dfd333", 0, 0);
 
         list.add(p1);
@@ -189,10 +195,7 @@ public class Places extends Fragment {
 
     private void generateroute() {
 
-        if(adapter.getSelected().size() == 0) {
-            Toast.makeText(getActivity(), "Ningun lugar seleccionado", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
 
         loadingtxt.setText("Procesando Solicitud...");
 
@@ -206,7 +209,7 @@ public class Places extends Fragment {
 
         LatLng orig;
 
-        if(gpsswitch.isChecked()){//se crea un latlong con la ubicacion actual del usuario y se agega coordinates
+        if(gpsswitch.isChecked()){//se crea un latlong con la ubicacion actual del usuario y se agrega coordinates
             Location gps_lock = null;
 
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -221,7 +224,7 @@ public class Places extends Fragment {
             orig = adapter.getOrigin().getCoordinates();
         }
 
-        int oIndex = coordinates.indexOf(orig);
+        coordinates.remove(orig);
 
 
         String mode = "";
@@ -247,9 +250,10 @@ public class Places extends Fragment {
             }
         }
 
-        String reqURL = new MapsUrlBuilder(coordinates, timereq , mode, oIndex).build();
+        String reqURL = new MapsUrlBuilder(coordinates, timereq , mode, orig).build();
 
         //Log.i(TAG, reqURL); //URL generando correctamente
+
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(reqURL).build();
@@ -262,9 +266,12 @@ public class Places extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                loadingtxt.setText("Optimizando ruta...");
+                //loadingtxt.setText("Optimizando ruta...");
 
-                ((MainActivity)getActivity()).routesCallback(response.body());
+                ArrayList<Place> waypoints = new ArrayList<>(adapter.getSelected());
+                waypoints.remove(adapter.getOrigin());
+
+                ((MainActivity)getActivity()).routesCallback(response.body(), adapter.getOrigin(), waypoints);
 
             }
         });

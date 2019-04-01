@@ -27,27 +27,25 @@ public class MapsUrlBuilder {
     private ArrayList<LatLng> coors;
     private long time;
     private String mode;
-    private int oIndex;
+    private LatLng orig;
 
-    public MapsUrlBuilder(ArrayList<LatLng> coors, long time, @DirectionsMode String mode, int oIndex){
+    public MapsUrlBuilder(ArrayList<LatLng> coors, long time, @DirectionsMode String mode, LatLng orig){
         this.coors = coors;
         this.time = time;
         this.mode = mode;
-        this.oIndex = oIndex;
+        this.orig = orig;
     }
 
     public String build() {
 
-        String origin_param = "origin=" + coors.get(oIndex).latitude + "," + coors.get(oIndex).longitude;
-        String destination_param = "&destination=" + coors.get(oIndex).latitude + "," + coors.get(oIndex).longitude;;
+        String origin_param = "origin=" + orig.latitude + "," + orig.longitude;
+        String destination_param = "&destination=" + orig.latitude + "," + orig.longitude;;
         String mode_param = "&mode=" + mode;
         String time_param = "&departure_time=" + (time == 0 ? "now" : time);
         String waypoints_param = "&waypoints=optimize:true";
 
-        ArrayList<LatLng> coopy = (ArrayList) coors.clone();
-        coopy.remove(coors.get(oIndex));
 
-        for(LatLng ll : coopy) {
+        for(LatLng ll : coors) {
             waypoints_param = waypoints_param + "|" + ll.latitude + "," + ll.longitude;
         }
 

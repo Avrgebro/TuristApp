@@ -18,6 +18,7 @@ public class Place {
         this.name = name;
         this.coordinates = coordinates;
         this.imgurl = imgurl;
+        this.horario = new Horario();
         this.horario.apertura = apertura;
         this.horario.cierre = cierre;
     }
@@ -75,5 +76,7 @@ public class Place {
     class Horario {
         public int apertura;
         public int cierre;
+
+        public Horario(){}
     }
 }

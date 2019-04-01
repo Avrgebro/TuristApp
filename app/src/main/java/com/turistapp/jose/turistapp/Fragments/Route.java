@@ -2,6 +2,7 @@ package com.turistapp.jose.turistapp.Fragments;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,8 +22,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.turistapp.jose.turistapp.MapsUtils.PolylineManager;
+import com.turistapp.jose.turistapp.Model.RouteSegment;
 import com.turistapp.jose.turistapp.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Route extends Fragment implements OnMapReadyCallback {
@@ -48,6 +55,13 @@ public class Route extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_route, container, false);
 
+        mapView = (MapView) view.findViewById(R.id.map);
+        if(mapView != null){
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
+
         return view;
     }
 
@@ -59,12 +73,7 @@ public class Route extends Fragment implements OnMapReadyCallback {
         dzone = (LinearLayout) view.findViewById(R.id.dragzone);
         slidingLayout.setDragView(dzone);
 
-        mapView = (MapView) view.findViewById(R.id.map);
-        if(mapView != null){
-            mapView.onCreate(null);
-            mapView.onResume();
-            mapView.getMapAsync(this);
-        }
+
 
         slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -85,18 +94,34 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
         MapsInitializer.initialize(getContext());
 
-
-
         LatLng ll = new LatLng(-0.9681658,-80.7127556);
-
-
-        //googleMap.addMarker(new MarkerOptions().position(ll));
 
         CameraPosition pos = CameraPosition.builder().target(ll).zoom(14).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+
+        this.googleMap = googleMap;
     }
 
-    public void processRoute(){
+    public void processRoute(ArrayList<RouteSegment> segments){
+        PolylineManager pmanager = new PolylineManager();
+
+        for(RouteSegment rs : segments){
+            List<LatLng> aux = pmanager.decode_multiple(rs.getSegments());
+            PolylineOptions lineOptions = new PolylineOptions();
+            lineOptions.addAll(aux);
+            lineOptions.width(15);
+            lineOptions.color(Color.BLUE);
+
+            googleMap.addMarker(new MarkerOptions()
+                    .position(aux.get(0))
+                    .title("Hello world"));
+
+            googleMap.addPolyline(lineOptions);
+        }
+
+
+
+
 
     }
 

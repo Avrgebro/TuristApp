@@ -1,5 +1,6 @@
 package com.turistapp.jose.turistapp;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,18 +14,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.JsonObject;
 import com.turistapp.jose.turistapp.Fragments.Chatbot;
 import com.turistapp.jose.turistapp.Fragments.Places;
 import com.turistapp.jose.turistapp.Fragments.Route;
+import com.turistapp.jose.turistapp.Model.Place;
+import com.turistapp.jose.turistapp.Model.RouteSegment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
 
@@ -89,13 +96,10 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         this.directionsResponse = r;
     }
 
-    public void routesCallback(ResponseBody responseBody){
-        //fm.beginTransaction().hide(active).show(routeFragment).commit();
-        //active = routeFragment;
+    public void routesCallback(ResponseBody responseBody, Place origin, ArrayList<Place> waypoints){
 
-        //((Route) routeFragment).processRoute(route);
 
-        JSONArray legs;
+        JSONArray legs = null;
         JSONArray waypoint_order;
 
         try {
@@ -111,6 +115,49 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
         //solo necesito legs y waypoint order
 
+        if(legs.length() <= 0){
+            Toast.makeText(this, "No hay ruta disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayList<RouteSegment> routeSegments = new ArrayList<>();
+
+        try {
+
+            for (int i = 0; i < legs.length() - 1; i++) {
+                JSONObject aux = legs.getJSONObject(i);
+                JSONArray steps = aux.getJSONArray("steps");
+                JSONObject distance = aux.getJSONObject("distance");
+                JSONObject duration = aux.getJSONObject("duration");
+
+                ArrayList<String> segment_steps = new ArrayList<>();
+                int segment_distance = distance.getInt("value");
+                int segment_duration = duration.getInt("value");
+
+                for(int j = 0; j < steps.length(); j++){
+                    JSONObject step = steps.getJSONObject(j);
+                    JSONObject polyline = step.getJSONObject("polyline");
+                    String points = polyline.getString("points");
+                    segment_steps.add(points);
+                }
+
+                routeSegments.add(new RouteSegment(segment_steps,segment_distance,segment_duration));
+
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        fm.beginTransaction().hide(active).show(routeFragment).commit();
+        active = routeFragment;
+
+        ((Activity) this).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((Route) routeFragment).processRoute(routeSegments);
+            }
+        });
 
 
 
