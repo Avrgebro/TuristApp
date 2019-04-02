@@ -2,9 +2,13 @@ package com.turistapp.jose.turistapp.Fragments;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +17,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -25,6 +36,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.turistapp.jose.turistapp.MapsUtils.PolylineManager;
+import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.Model.RouteSegment;
 import com.turistapp.jose.turistapp.R;
 
@@ -102,26 +114,102 @@ public class Route extends Fragment implements OnMapReadyCallback {
         this.googleMap = googleMap;
     }
 
-    public void processRoute(ArrayList<RouteSegment> segments){
+    public void processRoute(ArrayList<RouteSegment> segments, Place origin, ArrayList<Place> waypoints){
         PolylineManager pmanager = new PolylineManager();
 
+        String iconbase = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=";
+        String iconcolor= "|FE6256|000000";
+
         for(RouteSegment rs : segments){
+
             List<LatLng> aux = pmanager.decode_multiple(rs.getSegments());
             PolylineOptions lineOptions = new PolylineOptions();
             lineOptions.addAll(aux);
-            lineOptions.width(15);
+            lineOptions.width(10);
             lineOptions.color(Color.BLUE);
 
-            googleMap.addMarker(new MarkerOptions()
-                    .position(aux.get(0))
-                    .title("Hello world"));
-
             googleMap.addPolyline(lineOptions);
+
+
         }
 
+        waypoints.add(0, origin);
+        int i = 0;
+        for(Place p : waypoints){
 
+            String url = iconbase + (i+1) + iconcolor;
 
+            Glide.with(getActivity())
+                    .asBitmap()
+                    .load(url)
+                    .fitCenter()
+                    .override(100, 100)
+                    .into(new Target<Bitmap>() {
 
+                        @Override
+                        public void onLoadStarted(@Nullable Drawable placeholder) {
+
+                        }
+
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+
+                            googleMap.addMarker(new MarkerOptions()
+                                    .position(p.getCoordinates())
+                                    .title(p.getName())
+                                    .icon(BitmapDescriptorFactory.fromBitmap(resource)));
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            googleMap.addMarker(new MarkerOptions()
+                                    .position(p.getCoordinates())
+                                    .title(p.getName()));
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+
+                        @Override
+                        public void getSize(@NonNull SizeReadyCallback cb) {
+                            cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                        }
+
+                        @Override
+                        public void removeCallback(@NonNull SizeReadyCallback cb) {
+
+                        }
+
+                        @Override
+                        public void setRequest(@Nullable Request request) {
+
+                        }
+
+                        @Nullable
+                        @Override
+                        public Request getRequest() {
+                            return null;
+                        }
+
+                        @Override
+                        public void onStart() {
+
+                        }
+
+                        @Override
+                        public void onStop() {
+
+                        }
+
+                        @Override
+                        public void onDestroy() {
+
+                        }
+                    });
+            i++;
+        }
 
     }
 

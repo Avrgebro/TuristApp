@@ -115,7 +115,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
         //solo necesito legs y waypoint order
 
-        if(legs.length() <= 0){
+        if(legs.length() <= 0 || legs == null){
             Toast.makeText(this, "No hay ruta disponible", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -123,6 +123,8 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         ArrayList<RouteSegment> routeSegments = new ArrayList<>();
 
         try {
+
+
 
             for (int i = 0; i < legs.length() - 1; i++) {
                 JSONObject aux = legs.getJSONObject(i);
@@ -152,10 +154,12 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         fm.beginTransaction().hide(active).show(routeFragment).commit();
         active = routeFragment;
 
+
+
         ((Activity) this).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((Route) routeFragment).processRoute(routeSegments);
+                ((Route) routeFragment).processRoute(routeSegments, origin, waypoints);
             }
         });
 
