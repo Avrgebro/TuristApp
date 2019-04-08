@@ -183,11 +183,15 @@ public class Places extends Fragment {
 
         Place p1 = new Place("Museo Cancebi", new LatLng(-0.9476959,-80.7217458), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2F2016-12-20.jpg?alt=media&token=ee11f173-11d4-47b3-8587-55c8bc07df66", 9, 17);
         Place p2 = new Place("Malecon del murcielago", new LatLng(-0.9406871,-80.7322122), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fatardecer-entrando-al.jpg?alt=media&token=5de4c3e9-07e1-4eac-986d-c5e32c479abd", 0, 0);
-        Place p3 = new Place("Playa Murcielago", new LatLng(-0.9425146,-80.742785), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FPlaya%20del%20Murci%C3%A9lago%20_1.jpg?alt=media&token=b8aed93c-c660-40fc-be40-940563dfd333", 0, 0);
+        Place p3 = new Place("Playa Murcielago", new LatLng(-0.9399168,-80.7342732), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FPlaya%20del%20Murci%C3%A9lago%20_1.jpg?alt=media&token=b8aed93c-c660-40fc-be40-940563dfd333", 0, 0);
+        Place p4 = new Place("Monumento al Pescador", new LatLng(-0.9524816,-80.719479), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2Fman4.jpg?alt=media&token=c40fe927-317b-427e-83c6-1b852c055e34", 0, 0);
+        Place p5 = new Place("El Paseo Shopping", new LatLng(-0.9664772,-80.7075729), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2FEl_paseo_shopping.jpg?alt=media&token=e7abf878-f1ec-47b7-897b-2c5e1385ef41", 10, 23);
 
         list.add(p1);
         list.add(p2);
         list.add(p3);
+        list.add(p4);
+        list.add(p5);
 
         return list;
     }
@@ -275,10 +279,6 @@ public class Places extends Fragment {
 
             }
         });
-
-
-
-
 
     }
 

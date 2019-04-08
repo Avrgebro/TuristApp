@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
@@ -125,10 +126,16 @@ public class Route extends Fragment implements OnMapReadyCallback {
             List<LatLng> aux = pmanager.decode_multiple(rs.getSegments());
             PolylineOptions lineOptions = new PolylineOptions();
             lineOptions.addAll(aux);
-            lineOptions.width(10);
-            lineOptions.color(Color.BLUE);
+            lineOptions.width(8);
+            lineOptions.color(getContext().getResources().getColor(R.color.colorAccent));
+
+            PolylineOptions lineOptionsinner = new PolylineOptions();
+            lineOptionsinner.addAll(aux);
+            lineOptionsinner.width(6);
+            lineOptionsinner.color(getContext().getResources().getColor(R.color.colorPrimaryDark));
 
             googleMap.addPolyline(lineOptions);
+            googleMap.addPolyline(lineOptionsinner);
 
 
         }
@@ -141,8 +148,9 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
             Glide.with(getActivity())
                     .asBitmap()
-                    .load(url)
+                    .load(p.getImgurl())
                     .fitCenter()
+                    .apply(RequestOptions.circleCropTransform())
                     .override(100, 100)
                     .into(new Target<Bitmap>() {
 
