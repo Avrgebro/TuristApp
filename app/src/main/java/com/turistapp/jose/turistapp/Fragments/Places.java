@@ -124,8 +124,8 @@ public class Places extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(adapter.getSelected().size() == 0) {
-                    Toast.makeText(getActivity(), "Ningun lugar seleccionado", Toast.LENGTH_SHORT).show();
+                if(adapter.getSelected().size() < 2) {
+                    Toast.makeText(getActivity(), "Debe seleccionar almenos dos lugares", Toast.LENGTH_SHORT).show();
                 } else {
                     loadinglayout.setVisibility(View.VISIBLE);
                     controlslayout.setVisibility(View.GONE);
@@ -216,10 +216,10 @@ public class Places extends Fragment {
         if(gpsswitch.isChecked()){//se crea un latlong con la ubicacion actual del usuario y se agrega coordinates
             Location gps_lock = null;
 
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 gps_lock = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-
+            }*/
+            gps_lock = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             orig = new LatLng(gps_lock.getLatitude(), gps_lock.getLongitude());
 
             coordinates.add(orig);
