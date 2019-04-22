@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.Request;
@@ -31,17 +33,24 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.common.primitives.Ints;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.turistapp.jose.turistapp.Adapters.ItineraryListAdapter;
 import com.turistapp.jose.turistapp.MapsUtils.PolylineManager;
 import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.Model.RouteSegment;
 import com.turistapp.jose.turistapp.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -115,7 +124,7 @@ public class Route extends Fragment implements OnMapReadyCallback {
         this.googleMap = googleMap;
     }
 
-    public void processRoute(ArrayList<RouteSegment> segments, Place origin, ArrayList<Place> waypoints){
+    public void processRoute(ArrayList<RouteSegment> segments, Place origin, ArrayList<Place> waypoints, int[] waypoint_order){
         PolylineManager pmanager = new PolylineManager();
 
         String iconbase = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=";
@@ -127,18 +136,30 @@ public class Route extends Fragment implements OnMapReadyCallback {
             PolylineOptions lineOptions = new PolylineOptions();
             lineOptions.addAll(aux);
             lineOptions.width(8);
-            lineOptions.color(getContext().getResources().getColor(R.color.colorAccent));
+            lineOptions.color(getContext().getResources().getColor(R.color.colorPrimaryDark));
 
-            PolylineOptions lineOptionsinner = new PolylineOptions();
+            /*PolylineOptions lineOptionsinner = new PolylineOptions();
             lineOptionsinner.addAll(aux);
             lineOptionsinner.width(6);
-            lineOptionsinner.color(getContext().getResources().getColor(R.color.colorPrimaryDark));
+            lineOptionsinner.color(getContext().getResources().getColor(R.color.colorPrimaryDark));*/
+
+            List<PatternItem> pattern = Arrays.<PatternItem>asList(
+                    new Dash(30), new Dot(), new Gap(10));
+
+            lineOptions.pattern(pattern);
 
             googleMap.addPolyline(lineOptions);
-            googleMap.addPolyline(lineOptionsinner);
+            //googleMap.addPolyline(lineOptionsinner);
 
 
         }
+
+        ArrayList<Place> ordered = new ArrayList<>();
+        for(int i=0; i < waypoint_order.length; i++){
+            ordered.add(waypoints.get(Ints.indexOf(waypoint_order, i)));
+        }
+
+        waypoints = ordered;
 
         waypoints.add(0, origin);
         int i = 0;
@@ -219,11 +240,32 @@ public class Route extends Fragment implements OnMapReadyCallback {
             i++;
         }
 
+        setItinerary(segments, waypoints, waypoint_order);
     }
 
+    public void setItinerary(ArrayList<RouteSegment> segments, ArrayList<Place> waypoints, int[] waypoint_order){
+
+
+
+        segments.add(new RouteSegment(null, 0, 0));
+
+        ArrayList<Pair<RouteSegment, String>> aux = new ArrayList<>();
+
+        for(int i = 0; i < waypoints.size(); i++){
+
+            Pair<RouteSegment, String> p = new Pair<RouteSegment, String>(segments.get(i), waypoints.get(i).getName());
+
+            aux.add(p);
+        }
+
+        ListView itinerary = (ListView) view.findViewById(R.id.itinerarylist);
+        ItineraryListAdapter iadapter = new ItineraryListAdapter(getActivity(), aux);
+        itinerary.setAdapter(iadapter);
+    }
 
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
     }
+
 }

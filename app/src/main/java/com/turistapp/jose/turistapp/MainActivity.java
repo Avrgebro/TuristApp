@@ -100,7 +100,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
 
         JSONArray legs = null;
-        JSONArray waypoint_order;
+        JSONArray waypoint_order = null;
 
         try {
             JSONObject routes = new JSONObject(responseBody.string());
@@ -154,12 +154,17 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         fm.beginTransaction().hide(active).show(routeFragment).commit();
         active = routeFragment;
 
+        int[] numbers = new int[waypoint_order.length()];
+
+        for (int i = 0; i < waypoint_order.length(); ++i) {
+            numbers[i] = waypoint_order.optInt(i);
+        }
 
 
         ((Activity) this).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((Route) routeFragment).processRoute(routeSegments, origin, waypoints);
+                ((Route) routeFragment).processRoute(routeSegments, origin, waypoints, numbers);
             }
         });
 

@@ -9,13 +9,40 @@
         android:id="@+id/messagesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input" />
+        android:layout_above="@+id/botcontrols" />
 
-    <com.stfalcon.chatkit.messages.MessageInput
-        android:id="@+id/input"
+    <LinearLayout
+        android:id="@+id/botcontrols"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:inputHint="Envia un mensaje"/>
+        android:layout_alignParentBottom="true">
+
+        <com.stfalcon.chatkit.messages.MessageInput
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:inputHint="Envia un mensaje"/>
+
+        <LinearLayout
+            android:id="@+id/tagcontainer"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <me.gujun.android.taggroup.TagGroup
+                android:id="@+id/tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
 
 </RelativeLayout>

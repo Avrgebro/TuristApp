@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation "com.airbnb.android:lottie:2.7.0"
     implementation 'com.polyak:icon-switch:1.0.0'
+    implementation 'me.gujun.android.taggroup:library:1.4@aar'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

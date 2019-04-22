@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
@@ -27,8 +28,12 @@ import com.turistapp.jose.turistapp.Model.Message;
 import com.turistapp.jose.turistapp.R;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import me.gujun.android.taggroup.TagGroup;
 
 
 public class Chatbot extends Fragment{
@@ -49,7 +54,8 @@ public class Chatbot extends Fragment{
     private MessageInput input;
     protected final String senderId = "0";
     private Author author;
-
+    private TagGroup taggroup;
+    private LinearLayout tagcontainer;
     View view;
 
     public Chatbot() {
@@ -117,7 +123,23 @@ public class Chatbot extends Fragment{
     public void callback(DetectIntentResponse response) {
         if (response != null) {
             String reply = response.getQueryResult().getFulfillmentText();
-            adapter.addToStart(addMessage("1", reply), true);
+            String[] msgs = reply.split("\\*");
+
+            for(int i = 0; i < msgs.length; i++){
+                String aux = msgs[i];
+                if(!aux.startsWith("/")){
+                    adapter.addToStart(addMessage("1", aux), true);
+                }
+            }
+
+            if(msgs[msgs.length-1].startsWith("/")){
+                taggroup = (TagGroup) view.findViewById(R.id.tags);
+                tagcontainer = (LinearLayout) view.findViewById(R.id.tagcontainer);
+                taggroup.setTags(getTags());
+                input.setVisibility(View.GONE);
+                tagcontainer.setVisibility(View.VISIBLE);
+
+            }
 
         } else {
             Log.d(TAG, "Bot Reply: Null");
@@ -134,6 +156,19 @@ public class Chatbot extends Fragment{
         }
         author = new Author(userId,name,null);
         return new Message(userId,author,text,new Date());
+    }
+
+    private ArrayList<String> getTags(){
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("Naturaleza");
+        tags.add("Historia");
+        tags.add("Arte");
+        tags.add("Vida nocturna");
+        tags.add("Comida");
+        tags.add("Shopping");
+        tags.add("Música");
+
+        return tags;
     }
 
     public interface OnFragmentInteractionListener {
