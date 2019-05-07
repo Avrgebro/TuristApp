@@ -26,16 +26,27 @@
         <LinearLayout
             android:id="@+id/tagcontainer"
             android:layout_width="wrap_content"
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:weightSum="10">
 
             <me.gujun.android.taggroup.TagGroup
                 android:id="@+id/tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"/>
 
-
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:maxWidth="42dp"
+                android:maxHeight="42dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_check_black_24dp"/>
 
 
         </LinearLayout>
