@@ -26,16 +26,22 @@
         <LinearLayout
             android:id="@+id/tagcontainer"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
+            android:layout_height="100dp"
             android:orientation="horizontal"
             android:visibility="gone"
             android:weightSum="10">
 
-            <me.gujun.android.taggroup.TagGroup
-                android:id="@+id/tags"
+            <HorizontalScrollView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="9"/>
+                android:layout_height="match_parent"
+                android:layout_weight="9">
+
+                <com.adroitandroid.chipcloud.ChipCloud
+                    android:id="@+id/tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </HorizontalScrollView>
+
 
             <ImageView
                 android:layout_width="0dp"

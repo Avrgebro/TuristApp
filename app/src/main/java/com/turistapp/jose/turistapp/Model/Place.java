@@ -4,12 +4,12 @@ package com.turistapp.jose.turistapp.Model;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Place {
+    private int id;
     private String name;
-    //private float latitude;
-    //private float longitude;
     private LatLng coordinates;
     private String imgurl;
     private Horario horario;
+    private String descripcion;
 
     public Place() {
     }
@@ -23,6 +23,17 @@ public class Place {
         this.horario.cierre = cierre;
     }
 
+    public Place(int id, String name, LatLng coordinates, String imgurl, int apertura, int cierre, String descripcion) {
+        this.id = id;
+        this.name = name;
+        this.coordinates = coordinates;
+        this.imgurl = imgurl;
+        this.horario = new Horario();
+        this.horario.apertura = apertura;
+        this.horario.cierre = cierre;
+        this.descripcion = descripcion;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,24 +41,6 @@ public class Place {
     public void setName(String name) {
         this.name = name;
     }
-
-    /*
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
-    }
-    */
 
     public String getImgurl() {
         return imgurl;
@@ -71,6 +64,22 @@ public class Place {
 
     public void setHorario(Horario horario) {
         this.horario = horario;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     class Horario {

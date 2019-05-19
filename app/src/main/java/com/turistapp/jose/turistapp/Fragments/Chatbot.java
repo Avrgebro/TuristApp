@@ -1,7 +1,11 @@
 package com.turistapp.jose.turistapp.Fragments;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +14,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.adroitandroid.chipcloud.ChipCloud;
+import com.adroitandroid.chipcloud.ChipListener;
+import com.adroitandroid.chipcloud.FlowLayout;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
@@ -19,6 +28,17 @@ import com.google.cloud.dialogflow.v2.SessionName;
 import com.google.cloud.dialogflow.v2.SessionsClient;
 import com.google.cloud.dialogflow.v2.SessionsSettings;
 import com.google.cloud.dialogflow.v2.TextInput;
+import com.google.firebase.ml.common.FirebaseMLException;
+import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel;
+import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
+import com.google.firebase.ml.common.modeldownload.FirebaseModelManager;
+import com.google.firebase.ml.common.modeldownload.FirebaseRemoteModel;
+import com.google.firebase.ml.custom.FirebaseModelDataType;
+import com.google.firebase.ml.custom.FirebaseModelInputOutputOptions;
+import com.google.firebase.ml.custom.FirebaseModelInputs;
+import com.google.firebase.ml.custom.FirebaseModelInterpreter;
+import com.google.firebase.ml.custom.FirebaseModelOptions;
+import com.google.firebase.ml.custom.FirebaseModelOutputs;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
@@ -54,7 +74,7 @@ public class Chatbot extends Fragment{
     private MessageInput input;
     protected final String senderId = "0";
     private Author author;
-    private TagGroup taggroup;
+    private ChipCloud taggroup;
     private LinearLayout tagcontainer;
     View view;
 
@@ -133,9 +153,45 @@ public class Chatbot extends Fragment{
             }
 
             if(msgs[msgs.length-1].startsWith("/")){
-                taggroup = (TagGroup) view.findViewById(R.id.tags);
+
+                try{
+                    getplacesfromMLkit(25,1,1);
+                } catch (FirebaseMLException e) {
+                    Log.e("MLKIT: ", e.getMessage());
+                }
+
+                taggroup = (ChipCloud) view.findViewById(R.id.tags);
                 tagcontainer = (LinearLayout) view.findViewById(R.id.tagcontainer);
-                taggroup.setTags(getTags());
+
+                String[] labels = {"arte","historia","musica","naturaleza","vida nocturna","comida","shopping"};
+
+                new ChipCloud.Configure()
+                        .chipCloud(taggroup)
+                        .selectedColor(Color.parseColor("#FF2371FA"))
+                        .selectedFontColor(Color.parseColor("#FFFFFF"))
+                        .deselectedColor(Color.parseColor("#e1e1e1"))
+                        .deselectedFontColor(Color.parseColor("#333333"))
+                        .selectTransitionMS(500)
+                        .deselectTransitionMS(250)
+                        .labels(labels)
+                        .mode(ChipCloud.Mode.MULTI)
+                        .allCaps(true)
+                        .gravity(ChipCloud.Gravity.STAGGERED)
+                        .textSize(getResources().getDimensionPixelSize(R.dimen.default_textsize))
+                        .verticalSpacing(getResources().getDimensionPixelSize(R.dimen.vertical_spacing))
+                        .minHorizontalSpacing(getResources().getDimensionPixelSize(R.dimen.min_horizontal_spacing))
+                        .chipListener(new ChipListener() {
+                            @Override
+                            public void chipSelected(int index) {
+                                //...
+                            }
+                            @Override
+                            public void chipDeselected(int index) {
+                                //...
+                            }
+                        })
+                        .build();
+
                 input.setVisibility(View.GONE);
                 tagcontainer.setVisibility(View.VISIBLE);
 
@@ -169,6 +225,74 @@ public class Chatbot extends Fragment{
         tags.add("Música");
 
         return tags;
+    }
+
+    private void getplacesfromMLkit(int age, int status, int genre) throws FirebaseMLException{
+
+        FirebaseModelDownloadConditions.Builder conditionsBuilder = new FirebaseModelDownloadConditions.Builder().requireWifi();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            conditionsBuilder = conditionsBuilder
+                    .requireCharging()
+                    .requireDeviceIdle();
+        }
+
+        FirebaseModelDownloadConditions conditions = conditionsBuilder.build();
+
+        FirebaseLocalModel localModel = new FirebaseLocalModel.Builder("local_places_recommend")
+                .setAssetFilePath("recsys.tflite").build();
+
+        FirebaseRemoteModel cloudSource = new FirebaseRemoteModel.Builder("places-recommend")
+                .enableModelUpdates(true)
+                .setInitialDownloadConditions(conditions)
+                .setUpdatesDownloadConditions(conditions)
+                .build();
+
+        FirebaseModelManager.getInstance().registerRemoteModel(cloudSource);
+
+        FirebaseModelOptions options = new FirebaseModelOptions.Builder()
+                .setRemoteModelName("remote_places-recommend")
+                .setLocalModelName("local_places-recommend")
+                .build();
+
+        FirebaseModelInterpreter firebaseInterpreter = FirebaseModelInterpreter.getInstance(options);
+
+        FirebaseModelInputOutputOptions inputOutputOptions =
+                new FirebaseModelInputOutputOptions.Builder()
+                        .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 3})
+                        .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 34})
+                        .build();
+
+        float[][] input = new float[1][3];
+
+        input[0][0] = age;
+        input[0][1] = status;
+        input[0][2] = genre;
+
+
+        FirebaseModelInputs inputs = new FirebaseModelInputs.Builder()
+                .add(input)  // add() as many input arrays as your model requires
+                .build();
+
+        firebaseInterpreter.run(inputs, inputOutputOptions)
+                .addOnSuccessListener(
+                        new OnSuccessListener<FirebaseModelOutputs>() {
+                            @Override
+                            public void onSuccess(FirebaseModelOutputs result) {
+                                float[][] output = result.getOutput(0);
+
+                                Log.i("OUTPUT: ", output.toString());
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Task failed with an exception
+                                // ...
+                            }
+                        });
+
     }
 
     public interface OnFragmentInteractionListener {
