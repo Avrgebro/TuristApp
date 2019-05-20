@@ -26,7 +26,11 @@ import org.json.JSONObject;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.turistapp.jose.turistapp.Async.UrlUtils;
 import com.turistapp.jose.turistapp.Fragments.Chatbot;
 import com.turistapp.jose.turistapp.Fragments.Places;
 import com.turistapp.jose.turistapp.Fragments.Route;
@@ -34,14 +38,23 @@ import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.Model.RouteSegment;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity
 implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionListener{
 
     private static final String TAG = "MainActivity: ";
+
+    private static final String GETPLACESBYINDEXURL = "https://us-central1-trip-planner-pucp.cloudfunctions.net/getPlacesByIndex/";
 
     private String directionsResponse = "";
 
@@ -179,6 +192,80 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
 
 
+
+    }
+
+    public void placesCallback(List<Integer> places) {
+        String placesstring = "";
+
+        for(int i : places){
+            placesstring = placesstring + "," + i;
+        }
+
+        placesstring = placesstring.substring(1);
+
+        String requesturl = GETPLACESBYINDEXURL + placesstring;
+
+        Log.i(TAG, requesturl);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(requesturl).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                ArrayList<Place> plist = new ArrayList<>();
+
+                try {
+
+                    //Log.i(TAG, response.body().string());
+
+                    String rr = response.body().string();
+                    JSONArray pjson = new JSONArray(rr);
+
+                    for(int i = 0; i<pjson.length(); i++){
+                        JSONObject o = pjson.getJSONObject(i);
+
+                        String name = o.getString("name");
+                        String desc = o.getString("description");
+                        int id = o.getInt("id");
+                        String image = o.getString("image");
+                        JSONArray hours = o.getJSONArray("hours");
+                        int h1 = hours.getInt(0);
+                        int h2 = hours.getInt(1);
+                        JSONObject location = o.getJSONObject("location");
+                        double lat = location.getDouble("_latitude");
+                        double lng = location.getDouble("_longitude");
+
+                        LatLng loc = new LatLng(lat,lng);
+
+                        Place p = new Place(id, name, loc, image, h1, h2, desc);
+
+                        plist.add(p);
+
+                    }
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Places) placesFragment).setAdapter(plist);
+                        }
+                    });
+
+                } catch(JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+
+
+
+            }
+        });
 
     }
 

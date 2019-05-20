@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -43,17 +44,19 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import com.turistapp.jose.turistapp.Async.DFRequest;
+import com.turistapp.jose.turistapp.MainActivity;
 import com.turistapp.jose.turistapp.Model.Author;
 import com.turistapp.jose.turistapp.Model.Message;
 import com.turistapp.jose.turistapp.R;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import me.gujun.android.taggroup.TagGroup;
+import java.util.Random;
 
 
 public class Chatbot extends Fragment{
@@ -110,6 +113,26 @@ public class Chatbot extends Fragment{
             }
         });
 
+        ImageView acceptprofile = (ImageView) view.findViewById(R.id.acceptprofile);
+        acceptprofile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Run Model
+                List<Integer> a = new ArrayList<>();
+
+                for(int i = 1; i<=34; i++){
+                    a.add(i);
+                }
+
+                Collections.shuffle(a);
+
+                List<Integer> rec = a.subList(0, 15);
+
+                ((MainActivity)getActivity()).placesCallback(rec);
+
+            }
+        });
+
         initai();
 
 
@@ -154,11 +177,11 @@ public class Chatbot extends Fragment{
 
             if(msgs[msgs.length-1].startsWith("/")){
 
-                try{
+                /*try{
                     getplacesfromMLkit(25,1,1);
                 } catch (FirebaseMLException e) {
                     Log.e("MLKIT: ", e.getMessage());
-                }
+                }*/
 
                 taggroup = (ChipCloud) view.findViewById(R.id.tags);
                 tagcontainer = (LinearLayout) view.findViewById(R.id.tagcontainer);
@@ -229,7 +252,7 @@ public class Chatbot extends Fragment{
 
     private void getplacesfromMLkit(int age, int status, int genre) throws FirebaseMLException{
 
-        FirebaseModelDownloadConditions.Builder conditionsBuilder = new FirebaseModelDownloadConditions.Builder().requireWifi();
+        /*FirebaseModelDownloadConditions.Builder conditionsBuilder = new FirebaseModelDownloadConditions.Builder().requireWifi();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             conditionsBuilder = conditionsBuilder
@@ -237,30 +260,35 @@ public class Chatbot extends Fragment{
                     .requireDeviceIdle();
         }
 
-        FirebaseModelDownloadConditions conditions = conditionsBuilder.build();
+        FirebaseModelDownloadConditions conditions = conditionsBuilder.build();*/
 
         FirebaseLocalModel localModel = new FirebaseLocalModel.Builder("local_places_recommend")
                 .setAssetFilePath("recsys.tflite").build();
 
-        FirebaseRemoteModel cloudSource = new FirebaseRemoteModel.Builder("places-recommend")
+        FirebaseModelManager.getInstance().registerLocalModel(localModel);
+
+        /*FirebaseRemoteModel cloudSource = new FirebaseRemoteModel.Builder("remote_places_recommend")
                 .enableModelUpdates(true)
                 .setInitialDownloadConditions(conditions)
                 .setUpdatesDownloadConditions(conditions)
                 .build();
 
-        FirebaseModelManager.getInstance().registerRemoteModel(cloudSource);
+        FirebaseModelManager.getInstance().registerRemoteModel(cloudSource);*/
 
         FirebaseModelOptions options = new FirebaseModelOptions.Builder()
-                .setRemoteModelName("remote_places-recommend")
-                .setLocalModelName("local_places-recommend")
+                //.setRemoteModelName("remote_places_recommend")
+                .setLocalModelName("local_places_recommend")
                 .build();
 
         FirebaseModelInterpreter firebaseInterpreter = FirebaseModelInterpreter.getInstance(options);
 
+        //float[][] inp = new float[1][3];
+        //float[][] out = new float[1][34];
+
         FirebaseModelInputOutputOptions inputOutputOptions =
                 new FirebaseModelInputOutputOptions.Builder()
                         .setInputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 3})
-                        .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 34})
+                        .setOutputFormat(0, FirebaseModelDataType.FLOAT32, new int[]{1, 1, 34})
                         .build();
 
         float[][] input = new float[1][3];
@@ -279,17 +307,18 @@ public class Chatbot extends Fragment{
                         new OnSuccessListener<FirebaseModelOutputs>() {
                             @Override
                             public void onSuccess(FirebaseModelOutputs result) {
-                                float[][] output = result.getOutput(0);
+                                //float[][] output = result.getOutput(0);
 
-                                Log.i("OUTPUT: ", output.toString());
+                                Log.i("OUTPUT: ", result.getOutput(0).toString());
+
+                                //((MainActivity)getActivity()).routesCallback(response.body(), adapter.getOrigin(), waypoints);
                             }
                         })
                 .addOnFailureListener(
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // Task failed with an exception
-                                // ...
+                                Log.i("OUTPUT: ", e.toString());
                             }
                         });
 

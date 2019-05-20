@@ -71,6 +71,8 @@ public class Places extends Fragment {
 
     private LocationManager locationManager;
 
+    private ArrayList<Place> _recommended;
+
     //widgets
     private LottieAnimationView animview;
     private Button genbtn;
@@ -106,8 +108,10 @@ public class Places extends Fragment {
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
+        _recommended = new ArrayList<Place>();
+
         listView = (ListView) view.findViewById(R.id.places_list);
-        adapter = new PlacesListAdapter(getActivity(), fakelist());
+        adapter = new PlacesListAdapter(getActivity(), _recommended);
         listView.setAdapter(adapter);
 
         animview = (LottieAnimationView) view.findViewById(R.id.pinjumpanimation);
@@ -194,6 +198,12 @@ public class Places extends Fragment {
         list.add(p5);
 
         return list;
+    }
+
+    public void setAdapter(ArrayList<Place> p){
+        _recommended.clear();
+        _recommended.addAll(p);
+        adapter.notifyDataSetChanged();
     }
 
 
