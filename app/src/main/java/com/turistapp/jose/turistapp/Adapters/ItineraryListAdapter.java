@@ -23,44 +23,65 @@ import java.util.List;
 
 public class ItineraryListAdapter extends ArrayAdapter<Pair<RouteSegment, String>> {
 
-
+    private Context mcontext;
     public ItineraryListAdapter(Context context, ArrayList<Pair<RouteSegment, String>> objects) {
         super(context, 0, objects);
+
+        mcontext = context;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View listItem = convertView;
+        ViewHolder holder;
 
-        if (listItem == null) {
-            listItem = LayoutInflater.from(getContext()).inflate(R.layout.itinerary_item, parent, false);
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mcontext).inflate(R.layout.places_item, parent, false);
+
+            holder = new ViewHolder();
+            holder.location = (TextView) convertView.findViewById(R.id.placename);
+            holder.distance = (TextView) convertView.findViewById(R.id.distanceto);
+            holder.duration = (TextView) convertView.findViewById(R.id.timeto);
+            holder.summary = (LinearLayout) convertView.findViewById(R.id.summary);
+
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+
         }
 
         Pair<RouteSegment, String> cur = getItem(position);
 
-        TextView location = (TextView) listItem.findViewById(R.id.placename);
-        location.setText(cur.second);
+        if(cur != null){
+            holder.location.setText(cur.second);
 
-        /*if(cur.first.getSegments() == null){
-            LinearLayout summary = (LinearLayout) listItem.findViewById(R.id.summary);
-            summary.setVisibility(View.GONE);
-        } else {
-            TextView duration = (TextView) listItem.findViewById(R.id.timeto);
-            duration.setText(cur.first.getTime()+"");
+            if(cur.first.getSegments() == null){
+                holder.summary.setVisibility(View.GONE);
+            } else {
 
-            TextView distance = (TextView) listItem.findViewById(R.id.distanceto);
-            distance.setText(cur.first.getDistance()+"");
-        }*/
-
-        TextView duration = (TextView) listItem.findViewById(R.id.timeto);
-        duration.setText(cur.first.getTime()+"");
-
-        TextView distance = (TextView) listItem.findViewById(R.id.distanceto);
-        distance.setText(cur.first.getDistance()+"");
+                holder.duration.setText(cur.first.getTime()+"");
 
 
-        return listItem;
+                holder.distance.setText(cur.first.getDistance()+"");
+            }
 
+            holder.duration.setText(cur.first.getTime()+"");
+
+            holder.distance.setText(cur.first.getDistance()+"");
+        }
+
+
+        return convertView;
+
+    }
+
+    private class ViewHolder {
+       TextView duration;
+       TextView distance;
+       TextView location;
+
+       View summary;
     }
 
 }

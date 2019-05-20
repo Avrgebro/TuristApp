@@ -85,9 +85,22 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
+
         }
 
         final Place item = getItem(position);
+
+        if(position == originindex){
+            holder.origin.setVisibility(View.VISIBLE);
+        } else {
+            holder.origin.setVisibility(View.INVISIBLE);
+        }
+
+        if(selectedroute.contains(item)){
+            holder.selected.setVisibility(View.VISIBLE);
+        } else {
+            holder.selected.setVisibility(View.INVISIBLE);
+        }
         if (item != null) {
 
             if(getPosition(item) == originindex ) {
