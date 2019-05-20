@@ -24,10 +24,14 @@ import java.util.List;
 public class ItineraryListAdapter extends ArrayAdapter<Pair<RouteSegment, String>> {
 
     private Context mcontext;
+
+    private int size;
     public ItineraryListAdapter(Context context, ArrayList<Pair<RouteSegment, String>> objects) {
         super(context, 0, objects);
 
         mcontext = context;
+
+        size = objects.size();
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ItineraryListAdapter extends ArrayAdapter<Pair<RouteSegment, String
 
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(mcontext).inflate(R.layout.places_item, parent, false);
+            convertView = LayoutInflater.from(mcontext).inflate(R.layout.itinerary_item, parent, false);
 
             holder = new ViewHolder();
             holder.location = (TextView) convertView.findViewById(R.id.placename);
@@ -53,22 +57,26 @@ public class ItineraryListAdapter extends ArrayAdapter<Pair<RouteSegment, String
 
         Pair<RouteSegment, String> cur = getItem(position);
 
-        if(cur != null){
-            holder.location.setText(cur.second);
+        holder.summary.setVisibility(View.VISIBLE);
 
-            if(cur.first.getSegments() == null){
+        if(cur != null){
+
+            holder.location.setText(cur.second);
+            holder.duration.setText(cur.first.getTime()+"");
+            holder.distance.setText(cur.first.getDistance()+"");
+
+            if(position == size-1){
+                holder.summary.setVisibility(View.GONE);
+            }
+
+            /*if(cur.first.getSegments() == null){
                 holder.summary.setVisibility(View.GONE);
             } else {
 
                 holder.duration.setText(cur.first.getTime()+"");
-
-
                 holder.distance.setText(cur.first.getDistance()+"");
-            }
+            }*/
 
-            holder.duration.setText(cur.first.getTime()+"");
-
-            holder.distance.setText(cur.first.getDistance()+"");
         }
 
 
