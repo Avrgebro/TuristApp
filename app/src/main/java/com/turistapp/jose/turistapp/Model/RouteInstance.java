@@ -1,42 +1,33 @@
 package com.turistapp.jose.turistapp.Model;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-import okhttp3.ResponseBody;
+import java.util.List;
 
 public class RouteInstance {
 
-    private ResponseBody response;
-    private Place origin;
-    private ArrayList<Place> waypoints;
+    private String routename;
+    private List<PolylineOptions> lineoptions;
 
-    public RouteInstance(ResponseBody response, Place origin, ArrayList<Place> waypoints) {
-        this.setResponse(response);
-        this.setOrigin(origin);
-        this.setWaypoints(waypoints);
+    public RouteInstance(String routename, List<PolylineOptions> lineoptions) {
+        this.setRoutename(routename);
+        this.setLineoptions(lineoptions);
     }
 
-    public ResponseBody getResponse() {
-        return response;
+
+    public String getRoutename() {
+        return routename;
     }
 
-    public void setResponse(ResponseBody response) {
-        this.response = response;
+    public void setRoutename(String routename) {
+        this.routename = routename;
     }
 
-    public Place getOrigin() {
-        return origin;
+    public List<PolylineOptions> getLineoptions() {
+        return lineoptions;
     }
 
-    public void setOrigin(Place origin) {
-        this.origin = origin;
-    }
-
-    public ArrayList<Place> getWaypoints() {
-        return waypoints;
-    }
-
-    public void setWaypoints(ArrayList<Place> waypoints) {
-        this.waypoints = waypoints;
+    public void setLineoptions(List<PolylineOptions> lineoptions) {
+        this.lineoptions = lineoptions;
     }
 }

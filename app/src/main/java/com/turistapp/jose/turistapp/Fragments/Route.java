@@ -1,6 +1,7 @@
 package com.turistapp.jose.turistapp.Fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -42,10 +44,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.primitives.Ints;
+import com.google.gson.reflect.TypeToken;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.turistapp.jose.turistapp.Adapters.ItineraryListAdapter;
 import com.turistapp.jose.turistapp.MapsUtils.PolylineManager;
 import com.turistapp.jose.turistapp.Model.Place;
+import com.turistapp.jose.turistapp.Model.RouteInstance;
 import com.turistapp.jose.turistapp.Model.RouteSegment;
 import com.turistapp.jose.turistapp.R;
 
@@ -53,15 +57,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 
 public class Route extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "Routes Fragment";
+    private static final String SP_NAME = "savedroutes";
 
     private OnFragmentInteractionListener mListener;
     private SlidingUpPanelLayout slidingLayout;
     private LinearLayout dzone;
     private ImageView arrow;
+    private Button save;
+    private RouteInstance rinstance;
 
     MapView mapView;
     GoogleMap googleMap;
@@ -109,6 +118,40 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
             }
         });
+
+        save = (Button) view.findViewById(R.id.savebtn);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sp = getContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor ed;
+                Gson gson = new Gson();
+                List<RouteInstance> l = null;
+
+                if(!sp.contains("route_list")){
+
+                    l = new ArrayList<>();
+                    l.add(rinstance);
+
+                } else {
+
+                    String name = sp.getString("route_list", "[]");
+
+                    l = gson.fromJson(name, new TypeToken<List<RouteInstance>>(){}.getType());
+                    l.add(rinstance);
+                }
+
+                ed = sp.edit();
+
+                String routesJson = gson.toJson(l);
+
+                ed.putString("route_list", routesJson);
+
+                ed.apply();
+
+                save.setEnabled(false);
+            }
+        });
     }
 
     @Override
@@ -129,6 +172,8 @@ public class Route extends Fragment implements OnMapReadyCallback {
 
         String iconbase = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=";
         String iconcolor= "|FE6256|000000";
+
+        List<PolylineOptions> lops = new ArrayList<>();
 
         for(RouteSegment rs : segments){
 
@@ -151,8 +196,12 @@ public class Route extends Fragment implements OnMapReadyCallback {
             googleMap.addPolyline(lineOptions);
             //googleMap.addPolyline(lineOptionsinner);
 
+            lops.add(lineOptions);
+            save.setEnabled(true);
 
         }
+
+        rinstance = new RouteInstance("Ruta sin nombre", lops );
 
         ArrayList<Place> ordered = new ArrayList<>();
         for(int i=0; i < waypoint_order.length; i++){

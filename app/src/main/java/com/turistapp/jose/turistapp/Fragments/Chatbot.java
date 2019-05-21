@@ -135,6 +135,15 @@ public class Chatbot extends Fragment{
 
         initai();
 
+        if(!((MainActivity)getActivity()).isNetworkAvailable()){
+            customBotMsg("Hola, parece que no estas conectado a internet, " +
+                    "selecciona la opcion 'Guardado' del menu inferior para visualizar las rutas que guardaste " +
+                    "anteriormente. ");
+
+            input.setEnabled(false);
+        }
+
+
 
     }
 
@@ -237,6 +246,11 @@ public class Chatbot extends Fragment{
         return new Message(userId,author,text,new Date());
     }
 
+    public void customBotMsg(String text){
+        Message m = addMessage("1", text);
+        adapter.addToStart(m, true);
+    }
+
     private ArrayList<String> getTags(){
         ArrayList<String> tags = new ArrayList<>();
         tags.add("Naturaleza");
@@ -252,7 +266,7 @@ public class Chatbot extends Fragment{
 
     private void getplacesfromMLkit(int age, int status, int genre) throws FirebaseMLException{
 
-        /*FirebaseModelDownloadConditions.Builder conditionsBuilder = new FirebaseModelDownloadConditions.Builder().requireWifi();
+        FirebaseModelDownloadConditions.Builder conditionsBuilder = new FirebaseModelDownloadConditions.Builder().requireWifi();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             conditionsBuilder = conditionsBuilder
@@ -260,23 +274,23 @@ public class Chatbot extends Fragment{
                     .requireDeviceIdle();
         }
 
-        FirebaseModelDownloadConditions conditions = conditionsBuilder.build();*/
+        FirebaseModelDownloadConditions conditions = conditionsBuilder.build();
 
         FirebaseLocalModel localModel = new FirebaseLocalModel.Builder("local_places_recommend")
                 .setAssetFilePath("recsys.tflite").build();
 
         FirebaseModelManager.getInstance().registerLocalModel(localModel);
 
-        /*FirebaseRemoteModel cloudSource = new FirebaseRemoteModel.Builder("remote_places_recommend")
+        FirebaseRemoteModel cloudSource = new FirebaseRemoteModel.Builder("remote_places_recommend")
                 .enableModelUpdates(true)
                 .setInitialDownloadConditions(conditions)
                 .setUpdatesDownloadConditions(conditions)
                 .build();
 
-        FirebaseModelManager.getInstance().registerRemoteModel(cloudSource);*/
+        FirebaseModelManager.getInstance().registerRemoteModel(cloudSource);
 
         FirebaseModelOptions options = new FirebaseModelOptions.Builder()
-                //.setRemoteModelName("remote_places_recommend")
+                .setRemoteModelName("remote_places_recommend")
                 .setLocalModelName("local_places_recommend")
                 .build();
 
@@ -307,11 +321,11 @@ public class Chatbot extends Fragment{
                         new OnSuccessListener<FirebaseModelOutputs>() {
                             @Override
                             public void onSuccess(FirebaseModelOutputs result) {
-                                //float[][] output = result.getOutput(0);
+                                List<Integer> re = new ArrayList<>();
 
                                 Log.i("OUTPUT: ", result.getOutput(0).toString());
 
-                                //((MainActivity)getActivity()).routesCallback(response.body(), adapter.getOrigin(), waypoints);
+                                ((MainActivity)getActivity()).placesCallback(re);
                             }
                         })
                 .addOnFailureListener(
@@ -323,6 +337,7 @@ public class Chatbot extends Fragment{
                         });
 
     }
+
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);

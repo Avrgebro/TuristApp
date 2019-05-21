@@ -34,6 +34,7 @@ import com.turistapp.jose.turistapp.Async.UrlUtils;
 import com.turistapp.jose.turistapp.Fragments.Chatbot;
 import com.turistapp.jose.turistapp.Fragments.Places;
 import com.turistapp.jose.turistapp.Fragments.Route;
+import com.turistapp.jose.turistapp.Fragments.SavedRoutes;
 import com.turistapp.jose.turistapp.Model.Place;
 import com.turistapp.jose.turistapp.Model.RouteSegment;
 
@@ -61,6 +62,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
     final Fragment chatbotFragment = new Chatbot();
     final Fragment placesFragment = new Places();
     final Fragment routeFragment = new Route();
+    final Fragment savedFragment = new SavedRoutes();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment active = chatbotFragment;
 
@@ -85,6 +87,11 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
                     fm.beginTransaction().hide(active).show(routeFragment).commit();
                     active = routeFragment;
                     return true;
+
+                case R.id.navigation_saved:
+                    fm.beginTransaction().hide(active).show(savedFragment).commit();
+                    active = routeFragment;
+                    return true;
             }
             return false;
         }
@@ -95,18 +102,44 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Check if device is online and add saved routes fragment
-
-        if(isNetworkAvailable()){
-
-        }
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        fm.beginTransaction().add(R.id.mainfragment, routeFragment, "3").hide(routeFragment).commit();
-        fm.beginTransaction().add(R.id.mainfragment, placesFragment, "2").hide(placesFragment).commit();
-        fm.beginTransaction().add(R.id.mainfragment, chatbotFragment, "1").commit();
+        //Check if device is online and add saved routes fragment
+
+        if(isNetworkAvailable()){
+
+            navigation.getMenu()
+                    .findItem(R.id.navigation_saved)
+                    .setVisible(false);
+
+            navigation.invalidate();
+
+            fm.beginTransaction().add(R.id.mainfragment, routeFragment, "3").hide(routeFragment).commit();
+            fm.beginTransaction().add(R.id.mainfragment, placesFragment, "2").hide(placesFragment).commit();
+            fm.beginTransaction().add(R.id.mainfragment, chatbotFragment, "1").commit();
+
+        } else {
+
+            navigation.getMenu()
+                    .findItem(R.id.navigation_places)
+                    .setVisible(false);
+
+            navigation.invalidate();
+
+            navigation.getMenu()
+                    .findItem(R.id.navigation_routes)
+                    .setVisible(false);
+
+            navigation.invalidate();
+
+            fm.beginTransaction().add(R.id.mainfragment, savedFragment, "2").hide(savedFragment).commit();
+            fm.beginTransaction().add(R.id.mainfragment, chatbotFragment, "1").commit();
+
+        }
+
+
 
     }
 
@@ -269,7 +302,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
 
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
