@@ -1,5 +1,7 @@
 package com.turistapp.jose.turistapp.Fragments;
 
+import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -55,6 +57,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 import java.util.Random;
 
@@ -118,17 +127,27 @@ public class Chatbot extends Fragment{
             @Override
             public void onClick(View v) {
                 //Run Model
-                List<Integer> a = new ArrayList<>();
+                //List<Integer> a = new ArrayList<>();
 
-                for(int i = 1; i<=34; i++){
+                /*for(int i = 1; i<=34; i++){
                     a.add(i);
                 }
 
                 Collections.shuffle(a);
 
-                List<Integer> rec = a.subList(0, 15);
+                List<Integer> rec = a.subList(0, 15);*/
 
-                ((MainActivity)getActivity()).placesCallback(rec);
+                try {
+                    Log.i("hola", "hola1");
+                    getplacesfromMLkit(25,1,1);
+                } catch (FirebaseMLException e) {
+                    Log.i("hola", "hola2");
+                    Log.e(TAG, e.getMessage() + " " + e.getCode());
+                }
+
+                //getplacesfromTF(25,1,1);
+
+                //((MainActivity)getActivity()).placesCallback(rec);
 
             }
         });
@@ -323,7 +342,16 @@ public class Chatbot extends Fragment{
                             public void onSuccess(FirebaseModelOutputs result) {
                                 List<Integer> re = new ArrayList<>();
 
-                                Log.i("OUTPUT: ", result.getOutput(0).toString());
+                                //Log.i("OUTPUT SUCCESS: ", result.toString());
+
+                                float[][][] res = result.getOutput(0);
+                                float[] res2 = res[0][0];
+
+                                for(int i = 0; i < (res2.length)/2; i++){
+                                    re.add(Math.round(res2[i]));
+                                }
+
+
 
                                 ((MainActivity)getActivity()).placesCallback(re);
                             }
@@ -332,10 +360,36 @@ public class Chatbot extends Fragment{
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.i("OUTPUT: ", e.toString());
+
+                                Log.i("OUTPUT FAILURE: ", e.toString() + " " + ((FirebaseMLException)e).getCode());
                             }
                         });
 
+    }
+
+    private void getplacesfromTF(int age, int status, int genre){
+        Interpreter tflite = null;
+        try {
+            tflite = new Interpreter(loadModelFile(getActivity(), "recsys.tflite"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        float[][] inp=new float[][]{{age,status,genre}};
+        int[][] out=new int[][]{{0}};
+        tflite.run(inp,out);
+
+        Log.i("TFLITE: ", out.toString());
+    }
+
+    private MappedByteBuffer loadModelFile(Activity activity, String MODEL_FILE) throws IOException {
+        AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(MODEL_FILE);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
 
 

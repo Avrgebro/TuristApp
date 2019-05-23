@@ -54,6 +54,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-model-interpreter:19.0.0'
     implementation 'com.github.adroitandroid:ChipCloud:2.2.1'
     implementation 'com.google.firebase:firebase-functions:17.0.0'
+    implementation 'org.tensorflow:tensorflow-lite:1.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
