@@ -3,34 +3,22 @@ package com.turistapp.jose.turistapp.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.turistapp.jose.turistapp.Activities.SRMActivity;
+import com.turistapp.jose.turistapp.Activities.SRGMActivity;
 import com.turistapp.jose.turistapp.Adapters.SavedRouteAdapter;
 import com.turistapp.jose.turistapp.Model.RouteInstance;
 import com.turistapp.jose.turistapp.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -78,7 +66,10 @@ public class SavedRoutes extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 RouteInstance sel = adapter.getItem(position);
 
-                Intent i = new Intent(getActivity(), SRMActivity.class);
+                Intent i = new Intent(getActivity(), SRGMActivity.class);
+                Gson gson = new Gson();
+                String rutaSerializada = gson.toJson(sel);
+                i.putExtra("ruta", rutaSerializada);
                 startActivity(i);
             }
         });

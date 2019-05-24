@@ -1,7 +1,10 @@
 package com.turistapp.jose.turistapp.Model;
 
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class RouteInstance {

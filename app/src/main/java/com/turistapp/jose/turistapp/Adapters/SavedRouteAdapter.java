@@ -51,14 +51,6 @@ public class SavedRouteAdapter extends ArrayAdapter<RouteInstance> {
         TextView name = (TextView) convertView.findViewById(R.id.namesr);
         name.setText("Ruta Guardada " + (position+1));
 
-
-
-        if(cur != null){
-
-
-        }
-
-
         return convertView;
 
     }
