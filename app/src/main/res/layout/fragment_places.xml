@@ -79,7 +79,13 @@
                 android:text="Crear ruta"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="30dp"/>
+                android:layout_marginEnd="30dp"
+                android:background="@color/colorAccent"
+                android:textColor="@color/white"
+                android:bottomLeftRadius="8dip"
+                android:topRightRadius="8dip"
+                android:topLeftRadius="1dip"
+                android:bottomRightRadius="1dip"/>
 
         </RelativeLayout>
 

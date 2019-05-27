@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adroitandroid.chipcloud.ChipCloud;
@@ -42,6 +45,9 @@ import com.google.firebase.ml.custom.FirebaseModelInputs;
 import com.google.firebase.ml.custom.FirebaseModelInterpreter;
 import com.google.firebase.ml.custom.FirebaseModelOptions;
 import com.google.firebase.ml.custom.FirebaseModelOutputs;
+import com.google.gson.JsonElement;
+import com.google.protobuf.ListValue;
+import com.google.protobuf.Value;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
@@ -55,9 +61,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.FileInputStream;
@@ -88,6 +99,7 @@ public class Chatbot extends Fragment{
     private Author author;
     private ChipCloud taggroup;
     private LinearLayout tagcontainer;
+    private Map parameters = new HashMap();
     View view;
 
     public Chatbot() {
@@ -126,28 +138,31 @@ public class Chatbot extends Fragment{
         acceptprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                View botcontrols = (LinearLayout) view.findViewById(R.id.tagcontainer);
+                botcontrols.setVisibility(View.GONE);
+
+                View progress = (LinearLayout) view.findViewById(R.id.loadingplaces);
+                progress.setVisibility(View.VISIBLE);
                 //Run Model
-                //List<Integer> a = new ArrayList<>();
 
-                /*for(int i = 1; i<=34; i++){
-                    a.add(i);
-                }
+                ListValue auxlist = ((Value)parameters.get("estado")).getListValue();
+                String status = auxlist.getValues(0).getStringValue();
+                String genre = ((Value)parameters.get("sexo")).getStringValue();
+                Double age = ((Value)parameters.get("number")).getNumberValue();
 
-                Collections.shuffle(a);
+                int agedata = age.intValue();
+                int genredata = genre.equalsIgnoreCase("Hombre") ? 1 : 0;
+                int statusdata = status.equalsIgnoreCase("Soltero") ? 0 : 1;
 
-                List<Integer> rec = a.subList(0, 15);*/
 
                 try {
-                    Log.i("hola", "hola1");
-                    getplacesfromMLkit(25,1,1);
+                    //Log.i("hola", "hola1");
+                    getplacesfromMLkit(agedata,statusdata,genredata);
                 } catch (FirebaseMLException e) {
-                    Log.i("hola", "hola2");
+                    //Log.i("hola", "hola2");
                     Log.e(TAG, e.getMessage() + " " + e.getCode());
                 }
-
-                //getplacesfromTF(25,1,1);
-
-                //((MainActivity)getActivity()).placesCallback(rec);
 
             }
         });
@@ -195,6 +210,13 @@ public class Chatbot extends Fragment{
         if (response != null) {
             String reply = response.getQueryResult().getFulfillmentText();
             String[] msgs = reply.split("\\*");
+
+            Map<String, Value> xd = response.getQueryResult().getParameters().getFieldsMap();
+
+            for (Map.Entry<String, Value> entry : xd.entrySet()) {
+                parameters.put(entry.getKey(), xd.get(entry.getKey()));
+            }
+
 
             for(int i = 0; i < msgs.length; i++){
                 String aux = msgs[i];
@@ -351,6 +373,12 @@ public class Chatbot extends Fragment{
                                     re.add(Math.round(res2[i]));
                                 }
 
+                                ProgressBar pb = (ProgressBar) view.findViewById(R.id.progress_places);
+                                TextView tv = (TextView) view.findViewById(R.id.progress_text);
+
+                                pb.setVisibility(View.GONE);
+                                tv.setText("Tus lugares estan listos! puedes verlo en le pestaña Lugares");
+
 
 
                                 ((MainActivity)getActivity()).placesCallback(re);
@@ -367,21 +395,6 @@ public class Chatbot extends Fragment{
 
     }
 
-    private void getplacesfromTF(int age, int status, int genre){
-        Interpreter tflite = null;
-        try {
-            tflite = new Interpreter(loadModelFile(getActivity(), "recsys.tflite"));
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        float[][] inp=new float[][]{{age,status,genre}};
-        int[][] out=new int[][]{{0}};
-        tflite.run(inp,out);
-
-        Log.i("TFLITE: ", out.toString());
-    }
 
     private MappedByteBuffer loadModelFile(Activity activity, String MODEL_FILE) throws IOException {
         AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(MODEL_FILE);
