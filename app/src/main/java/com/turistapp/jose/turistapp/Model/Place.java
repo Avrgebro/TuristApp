@@ -82,7 +82,7 @@ public class Place {
         this.descripcion = descripcion;
     }
 
-    class Horario {
+    public class Horario {
         public int apertura;
         public int cierre;
 

@@ -20,6 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
+import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.turistapp.jose.turistapp.Activities.PlaceInfoActivity;
 import com.turistapp.jose.turistapp.Fragments.Places;
@@ -165,6 +166,9 @@ public class PlacesListAdapter extends ArrayAdapter<Place> {
                 public void onClick(View v) {
                     Log.i("ADAPTER: ", "main layout clicked");
                     Intent intent = new Intent(mcon, PlaceInfoActivity.class);
+                    Gson gson = new Gson();
+                    String lugarSerializada = gson.toJson(item);
+                    intent.putExtra("place", lugarSerializada);
                     mcon.startActivity(intent);
 
                 }

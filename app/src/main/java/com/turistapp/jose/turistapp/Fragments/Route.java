@@ -168,6 +168,7 @@ public class Route extends Fragment implements OnMapReadyCallback {
     }
 
     public void processRoute(ArrayList<RouteSegment> segments, Place origin, ArrayList<Place> waypoints, int[] waypoint_order){
+        googleMap.clear();
         PolylineManager pmanager = new PolylineManager();
 
         String iconbase = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=";

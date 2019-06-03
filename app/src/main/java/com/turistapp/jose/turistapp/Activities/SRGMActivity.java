@@ -9,10 +9,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.turistapp.jose.turistapp.Model.RouteInstance;
 import com.turistapp.jose.turistapp.R;
+
+import java.util.List;
 
 public class SRGMActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -48,6 +51,10 @@ public class SRGMActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for(PolylineOptions p : l.getLineoptions()){
             mMap.addPolyline(p);
+            List<LatLng> points = p.getPoints();
+
+            mMap.addMarker(new MarkerOptions().position(points.get(0)));
+            mMap.addMarker(new MarkerOptions().position(points.get(points.size()-1)));
         }
 
     }

@@ -100,6 +100,8 @@ public class Chatbot extends Fragment{
     private ChipCloud taggroup;
     private LinearLayout tagcontainer;
     private Map parameters = new HashMap();
+    public List<Integer> selected;
+    public List<Integer> profile;
     View view;
 
     public Chatbot() {
@@ -155,6 +157,10 @@ public class Chatbot extends Fragment{
                 int genredata = genre.equalsIgnoreCase("Hombre") ? 1 : 0;
                 int statusdata = status.equalsIgnoreCase("Soltero") ? 0 : 1;
 
+                profile = new ArrayList<>();
+                profile.add(agedata);
+                profile.add(genredata);
+                profile.add(statusdata);
 
                 try {
                     //Log.i("hola", "hola1");
@@ -163,6 +169,8 @@ public class Chatbot extends Fragment{
                     //Log.i("hola", "hola2");
                     Log.e(TAG, e.getMessage() + " " + e.getCode());
                 }
+
+                ((MainActivity)getActivity()).datap = getdata();
 
             }
         });
@@ -236,7 +244,9 @@ public class Chatbot extends Fragment{
                 taggroup = (ChipCloud) view.findViewById(R.id.tags);
                 tagcontainer = (LinearLayout) view.findViewById(R.id.tagcontainer);
 
-                String[] labels = {"arte","historia","musica","naturaleza","vida nocturna","comida","shopping"};
+                String[] labels = {"Naturaleza","Historia","Arte","Vida nocturna","Comida","Shopping","Música"};
+
+                selected = new ArrayList<>();
 
                 new ChipCloud.Configure()
                         .chipCloud(taggroup)
@@ -256,11 +266,11 @@ public class Chatbot extends Fragment{
                         .chipListener(new ChipListener() {
                             @Override
                             public void chipSelected(int index) {
-                                //...
+                                selected.add(index);
                             }
                             @Override
                             public void chipDeselected(int index) {
-                                //...
+                                selected.remove(index);
                             }
                         })
                         .build();
@@ -303,6 +313,10 @@ public class Chatbot extends Fragment{
         tags.add("Música");
 
         return tags;
+    }
+
+    public String getdata(){
+        return selected.toString() + " " + profile.toString();
     }
 
     private void getplacesfromMLkit(int age, int status, int genre) throws FirebaseMLException{

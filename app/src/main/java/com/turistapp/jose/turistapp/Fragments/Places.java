@@ -182,7 +182,21 @@ public class Places extends Fragment {
 
     }
 
-    private List<Place> fakelist() {
+    public void switchcontrols (int anim, int controls){
+        if(anim == 1){
+            loadinglayout.setVisibility(View.VISIBLE);
+        } else {
+            loadinglayout.setVisibility(View.GONE);
+        }
+
+        if(controls == 1){
+            controlslayout.setVisibility(View.VISIBLE);
+        } else {
+            controlslayout.setVisibility(View.GONE);
+        }
+    }
+
+    /*private List<Place> fakelist() {
         List<Place> list = new ArrayList<>();
 
         Place p1 = new Place("Museo Cancebi", new LatLng(-0.9476959,-80.7217458), "https://firebasestorage.googleapis.com/v0/b/trip-planner-pucp.appspot.com/o/Places%2F2016-12-20.jpg?alt=media&token=ee11f173-11d4-47b3-8587-55c8bc07df66", 9, 17);
@@ -198,7 +212,7 @@ public class Places extends Fragment {
         list.add(p5);
 
         return list;
-    }
+    }*/
 
     public void setAdapter(ArrayList<Place> p){
         _recommended.clear();
@@ -289,6 +303,30 @@ public class Places extends Fragment {
 
             }
         });
+
+        ArrayList<Place> auxplace = adapter.getSelected();
+        List<Integer> isel = new ArrayList<>();
+        for(Place p : auxplace){
+            isel.add(p.getId());
+        }
+
+        String values = ((MainActivity)getActivity()).datap + " " + isel.toString();
+
+        request = new Request.Builder().url("https://us-central1-trip-planner-pucp.cloudfunctions.net/writeTrainingData/"+values).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //...
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //...
+            }
+        });
+
+
 
     }
 

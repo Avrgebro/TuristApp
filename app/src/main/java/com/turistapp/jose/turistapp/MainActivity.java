@@ -66,6 +66,8 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
     final FragmentManager fm = getSupportFragmentManager();
     Fragment active = chatbotFragment;
 
+    public String datap = "";
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -219,6 +221,7 @@ implements Chatbot.OnFragmentInteractionListener, Route.OnFragmentInteractionLis
         ((Activity) this).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                ((Places) placesFragment).switchcontrols(0,1);
                 ((Route) routeFragment).processRoute(routeSegments, origin, waypoints, numbers);
             }
         });
