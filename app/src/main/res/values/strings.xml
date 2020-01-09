@@ -4,7 +4,8 @@
     <string name="title_places">Lugares</string>
     <string name="title_routes">Rutas</string>
     <string name="title_saved">Guardado</string>
-
+    
+    <!--Deleted API keys from GCC, generate new ones to run app-->
     <string name="google_maps_key">AIzaSyAz8INMUB21e9AbqOQG-bXI8SYmB11ofA4</string>
     <string name="google_directions_key">AIzaSyDJ09WeQGy-A5sKgrMiZhmtQSPszo6MR3M</string>
 
